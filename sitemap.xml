@@ -6,6 +6,12 @@
           http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     
         <url>
+            <loc>https://raymii.org/s/articles/Creating_an_OS8_RK05_system_disk_from_RX01_floppies_for_the_PDP-8_with_SIMH.html</loc>
+            <lastmod>2016-12-07</lastmod>
+            <changefreq>weekly</changefreq>
+        </url>
+    
+        <url>
             <loc>https://raymii.org/s/blog/Overflow_the_Investigatory_Powers_Bill.html</loc>
             <lastmod>2016-11-24</lastmod>
             <changefreq>weekly</changefreq>
@@ -2922,6 +2928,12 @@
         </url>
     
         <url>
+            <loc>https://raymii.org/s/tags/rx01.html</loc>
+            <lastmod>2016-11-30</lastmod>
+            <changefreq>weekly</changefreq>
+        </url>
+    
+        <url>
             <loc>https://raymii.org/s/tags/nitrokey.html</loc>
             <lastmod>2016-11-30</lastmod>
             <changefreq>weekly</changefreq>
@@ -3571,6 +3583,12 @@
     
         <url>
             <loc>https://raymii.org/s/tags/domain.html</loc>
+            <lastmod>2016-11-30</lastmod>
+            <changefreq>weekly</changefreq>
+        </url>
+    
+        <url>
+            <loc>https://raymii.org/s/tags/wps-8.html</loc>
             <lastmod>2016-11-30</lastmod>
             <changefreq>weekly</changefreq>
         </url>
@@ -4327,6 +4345,12 @@
     
         <url>
             <loc>https://raymii.org/s/tags/maildir.html</loc>
+            <lastmod>2016-11-30</lastmod>
+            <changefreq>weekly</changefreq>
+        </url>
+    
+        <url>
+            <loc>https://raymii.org/s/tags/rk05.html</loc>
             <lastmod>2016-11-30</lastmod>
             <changefreq>weekly</changefreq>
         </url>
