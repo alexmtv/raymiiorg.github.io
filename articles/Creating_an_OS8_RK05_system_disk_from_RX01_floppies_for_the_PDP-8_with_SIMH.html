@@ -199,7 +199,7 @@ OS/8 V3Q
 
 <p>The <code>RESORC</code> command shows the system resources. In this case we can see that the <code>SYS</code> (system partition?) is of type <code>RX8E</code>. This type is the subsystem controller (hardware board) which, via the <a href="http://www.pdp-11.nl/peripherals/disk/rx-info.html">OMNIBUS</a>, drives the RX01 floppy drive. <a href="https://en.wikipedia.org/wiki/RK05">RK8E</a> is the (OMNIBUS) controller for the <code>RK05</code> disks. The <code>PT8E</code> is the paper tape/punch used with <code>PIP</code> as the <code>PTP:</code> or <code>PTR:</code> device.</p>
 
-<p>We start with formatting the diskette with the <code>ZERO</code> command:</p>
+<p>We start with formatting the disk with the <code>ZERO</code> command:</p>
 
 <pre><code>.ZERO RKA0:
 
@@ -208,7 +208,11 @@ OS/8 V3Q
 .
 </code></pre>
 
-<p>The disk had two sides, <code>A</code> and <code>B</code>, thus can be addressed as two devices, <code>RKA0</code> and <code>RKB0</code>.</p>
+<p>RKA0 and RKB0 represent the inner and outer cylinders of the disk. The split is necessary because OS/8 cannot address the entire 2.5 MB disk with a 12-bit machine word. 1.6 megawords is 6250 sectors (256 words per sector) so that overflows the 4096 word limit. So, it just assigns half the disk to one device, and half to the other.</p>
+
+<p>On the RK05F, the double-capacity fixed-disk version, OS/8 sees two logical drives, drive 0 and drive 1. So, RKA0, RKB0, RKA1, and RKB1.</p>
+
+<p>The above disk explanation comes via <a href="https://groups.google.com/forum/#!topic/pidp-8/uyUUxtZaQGQ">Warren Young and Rick Murphy</a> on the PiDP-8 mailinglist.</p>
 
 <p>The actual system build is done with the <code>BUILD</code> program:</p>
 
@@ -281,8 +285,6 @@ $
 
 <pre><code>$INSERT PT8E:PTR
 $INSERT PT8E:PTP
-
-$
 </code></pre>
 
 <p>If you want to export files or import files (with PIP) then having the papertape reader is quite handy.</p>
@@ -291,7 +293,7 @@ $
 
 <p><code>DSK</code> allows you to specify the name of the device that will become the default storage device of OS/8. Since we want to use the RK05 disk, we should tell the system that:</p>
 
-<pre><code>$DSK=RK8E:SYS
+<pre><code>$DSK RK8E:SYS
 </code></pre>
 
 <h4>SYSTEM and BOOTSTRAP</h4>
@@ -733,6 +735,26 @@ THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.
 
 .
 </code></pre>
+
+<p>There is one more way to get text in the system, directly via the terminal. </p>
+
+<h4>PIP TTY</h4>
+
+<p>Since the <code>TTY</code> device on emulated PDP-8&#39;s is just a window on your host computer, you can use the <code>TTY</code> device in <code>PIP</code> and paste text in from the host.</p>
+
+<p>Start up pip in OS/8:</p>
+
+<pre><code>. R PIP
+</code></pre>
+
+<p>then use the &quot;FILE.EX&lt;TTY:&quot; as input to PIP:</p>
+
+<pre><code>*REMY3.TX&lt;TTY:
+</code></pre>
+
+<p>Paste the text and ype <code>CTRL+Z</code> when the input is done. There is a 140 character line limit in ASCII mode. If you have binary data or longer lines, start up <code>PIP</code> with the <code>/I</code> flag in Image Mode.</p>
+
+<p>The above TTY trick comes via <a href="https://groups.google.com/forum/#!topic/pidp-8/uyUUxtZaQGQ">Warren Young and Rick Murphy</a> on the PiDP-8 mailinglist.</p>
 
 <p>When your entirely finished with your newly built system drive you can shut down the system with the <code>BOOT</code> command, then quit SIMH with a <code>CTRL+C</code>:</p>
 
