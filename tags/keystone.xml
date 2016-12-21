@@ -7,6 +7,14 @@
             <atom:link href="https://raymii.org/s/tags/keystone.xml" rel="self" type="application/rss+xml" />
     
             <item>
+                <title>OpenStack: Quick and automatic instance snapshot backup and restore (and before an apt upgrade) with nova backup</title> 
+                <link>https://raymii.org/s/tutorials/OpenStack_Quick_and_automatic_instance_snapshot_backups.html</link> 
+                <guid>https://raymii.org/s/tutorials/OpenStack_Quick_and_automatic_instance_snapshot_backups.html</guid>
+                <description>This is a guide that shows you how to create OpenStack instance snapshots automatically, quick and easy. This allows you to create a full backup of the entire instance. This guide has a script that makes creating snapshots from an OpenStack VM automatic via cron. The script uses the `nova backup` function, therefore it also has retention and rotation of the backups. It also features an option to create a snapshot before every apt action, upgrade/install/remove. This way, you can easily restore from the snapshot when something goes wrong after an upgrade. Snapshots are very usefull to restore the entire instance to an earlier state. Do note that this is not the same as a file based backup, you can't select a few files to restore, it's all or nothing.</description> 
+                <pubDate>Tue, 20 Dec 2016 00:00:00 GMT</pubDate>
+            </item>
+    
+            <item>
                 <title>Openstack Horizon installation with SSL on Ubuntu</title> 
                 <link>https://raymii.org/s/tutorials/Openstack-Set-Up-Horizon-Dashboard-on-Ubuntu.html</link> 
                 <guid>https://raymii.org/s/tutorials/Openstack-Set-Up-Horizon-Dashboard-on-Ubuntu.html</guid>
