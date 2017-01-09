@@ -57,7 +57,7 @@
            <div class="col-md-8 col-sm-8"> 
                 <div class="inner">
 
-           <h2 class='headheader'>haproxy: restrict specific URLs to specific IP addresses</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../snippets/index.html" class="link">Snippets</a></li><li><a href="haproxy_restrict_specific_urls_to_specific_ip_addresses.html" class="link">haproxy: restrict specific URLs to specific IP addresses</a></li></ul><p><small>08-12-2013</small> | <small>Remy van Elst</small></p><div class='ad'>
+           <h2 class='headheader'>haproxy: restrict specific URLs to specific IP addresses</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../snippets/index.html" class="link">Snippets</a></li><li><a href="haproxy_restrict_specific_urls_to_specific_ip_addresses.html" class="link">haproxy: restrict specific URLs to specific IP addresses</a></li></ul><p><small>09-01-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
                             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                             <!-- voorartikel -->
                             <ins class="adsbygoogle"
@@ -74,6 +74,8 @@
 <p>This snippet is tested on a Digital Ocean VPS. If you like this snippet and want to support me, plus get free credit @ DO, use this link to order a Digital Ocean VPS: <a href="https://www.digitalocean.com/?refcode=7435ae6b8212">https://www.digitalocean.com/?refcode=7435ae6b8212</a>   </p>
 
 <p>This example restricts access to the <code>/admin/</code> and <code>/helpdesk</code> URL&#39;s. It only allows access from the IP addresses <code>20.30.40.50</code> and <code>20.30.40.40</code>. Any other IP addresses will get the standard haproxy 403 forbidden error.</p>
+
+<h3>ACL for URL&#39;s</h3>
 
 <p>It uses the acl option. If the requested path begins with either <code>/admin</code> or <code>/helpdesk</code> haproxy sets the <code>restricted_page</code> acl. haproxy also looks at the requesting source IP address. If that matches any of the two IP addresses, it sets the <code>network_allowed</code> acl. If the <code>allowed_network</code> acl is set and the <code>restricted_page</code> is also set, it allows a visitor to go to the page. If the <code>restricted_page</code> acl is set but the <code>allowed_network</code> is not, haproxy will serve a 403 error, thus, disallowing access to that specific URL.</p>
 
@@ -120,6 +122,20 @@
 </code></pre>
 
 <p>This is the default apache error page. </p>
+
+<h3>ACL for TCP backends</h3>
+
+<p>** update 2017-01-09 **</p>
+
+<p>If you have a non-http service you want to restrict to a few IP&#39;s you can use an ACL together with the <code>tcp-request connection reject</code> optio. Here below is a simple example for a MySQL service. Do note that this also works in a <code>frontend</code> block:</p>
+
+<pre><code>listen mysql
+      bind            1.2.3.4:3306
+      mode            tcp
+      acl             network_allowed src 20.30.40.50 8.9.9.0/27
+      tcp-request     connection reject if !network_allowed
+      server          mysqlvip 10.0.0.30:3306
+</code></pre>
 
 <p><a href="http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#acl">More info on acl: http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#acl</a><br>
 <a href="http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#errorfile">More info on errorfile: http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#errorfile</a>  </p>
