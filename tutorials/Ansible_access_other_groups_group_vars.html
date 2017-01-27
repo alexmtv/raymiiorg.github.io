@@ -1,0 +1,233 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+        <title>Ansible: access group vars for groups the current host is not a member of - Raymii.org</title>
+        <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
+        <link href="/s/inc/css/light.css" rel="stylesheet"  />
+        <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
+        <script src="/s//inc/js/toc.js" type="text/javascript"></script>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <link href="inc/img/icons/iphone.png" rel="apple-touch-icon" />
+        <link href="inc/img/icons/ipad.png" rel="apple-touch-icon" sizes="76x76" />
+        <link href="inc/img/icons/iphone-retina.png" rel="apple-touch-icon" sizes="120x120" />
+        <link href="inc/img/icons/ipad-retina.png" rel="apple-touch-icon" sizes="152x152" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
+    </head>
+    <body>
+        <a id="top-of-page"></a>
+        <div class="container-fluid ">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-3 col-sm-3 max-200">
+                        <div class="well well-none"> 
+                            <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
+                            <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
+                        </div>
+          
+
+    
+    <form role="search" action="https://encrypted.google.com/search">
+        <div class="form-group">
+          <input type="hidden" name="as_sitesearch" value="raymii.org">
+          <input type="hidden" name="as_qdr" value="all">
+          <input type="text" name="as_q" class="form-control" placeholder="Search">
+        </div>
+      </form>
+      <div class="menu"><ul class="nav nav-pills nav-stacked"><li><a href="/s/index.html" class="special-menu">Home</a></li><li class='bottom-spacing'><a href="/s/everything.html" class="special-menu">All Pages</a></li><li class='hideifsmall'><a href="/s/tags/bash.html" class="link">Bash</a></li><li class='hideifsmall'><a href="/s/tags/monitoring.html" class="link">Monitoring</a></li><li class='hideifsmall'><a href="/s/tags/ssl.html" class="link">SSL</a></li><li class='hideifsmall'><a href="/s/tags/debian.html" class="link">Debian</a></li><li class='hideifsmall'><a href="/s/tags/python.html" class="link">Python</a></li><li class='hideifsmall'><a href="/s/tags/vpn.html" class="link">VPN</a></li><li class='hideifsmall'><a href="/s/tags/ubuntu.html" class="link">Ubuntu</a></li><li class='hideifsmall'><a href="/s/tags/nginx.html" class="link">nginx</a></li><li class='hideifsmall'><a href="/s/tags/openstack.html" class="link">Openstack</a></li><li class='hideifsmall'><a href="/s/tags/ansible.html" class="link">Ansible</a></li></ul>            
+               <!-- advertisement start -->
+                <a href="http://clients.inceptionhosting.com/aff.php?aff=083">Inception Hosting Affiliate Link</a><br />
+                <a href="https://www.digitalocean.com/?refcode=7435ae6b8212">Digital Ocean Affiliate Link, $10 free credit.</a><br />
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- Raymii-2 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:200px;height:200px"
+                     data-ad-client="ca-pub-7993642564731324"
+                     data-ad-slot="9322003332"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                <!-- advertisement end -->
+                </div>
+           </div>  
+           <div class="col-md-8 col-sm-8"> 
+                <div class="inner">
+
+           <h2 class='headheader'>Ansible: access group vars for groups the current host is not a member of</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../tutorials/index.html" class="link">Tutorials</a></li><li><a href="Ansible_access_other_groups_group_vars.html" class="link">Ansible: access group vars for groups the current host is not a member of</a></li></ul><p><small>27-01-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p><img src="https://raymii.org/s/inc/img/ansible-logo.png"></p>
+
+<p>This guide shows you how to access group variables for a group the current host is not a member of. In Ansible you can access other host variables using <code>hostvars[&#39;hostname&#39;]</code> but not group variables. The way described here is workable, but do I consider it a dirty hack. So why did I need this? I have a setup where ssl is offloaded by haproxy servers, but the virtual hosts and ssl configuration are defined in Apache servers. The loadbalancers and appservers are two different hostgroups, the ssl settings are in the appserver group_vars, which the hosts in the loadbalancer group need to access. The best way to do this is change the haproxy playbooks and configuration and define the certificates there, but in this specific case that wasn&#39;t a workable solution. Editing two yaml files (one for the appservers and one for the loadbalancers) was not an option in this situation.</p>
+
+<p>This is applicable for other scenario&#39;s as well. In templates this can be worked around by looping over all the groups, then over all the hosts in the specific group, then if the host is the first in the loop, go over all the hostvars for that host and then access the group var you want. <a href="https://stackoverflow.com/questions/34614337/ansible-get-other-group-vars">This stackoverflow</a> post goes over that. In my case I needed to access it in a playbook, the looping construction woudln&#39;t work there.</p>
+
+<h3>The inventory</h3>
+
+<p>In the inventory file I created a new group. This group has the two other groups, <code>appservers</code> and <code>loadbalancers</code> in them and nothing else. Like so:</p>
+
+<pre><code>[appserver]
+app1.cluster   
+app2.cluster   
+
+[loadbalancer]
+lb1.cluster   
+lb2.cluster   
+
+[ssl:children]
+loadbalancer
+appserver
+</code></pre>
+
+<p>The shortnames expand to specifc SSH configuration. The <code>ssl</code> hostgroup effectively includes the following hosts:</p>
+
+<ul>
+<li>app1</li>
+<li>app2</li>
+<li>lb1</li>
+<li>lb2</li>
+</ul>
+
+<p>However, we do need to modify the playbook that modifies the vhosts  to only place the certificates on the loadbalancers, and do nothing with the certificates on the appservers. The playbook should still do it&#39;s normal thing, configuring the vhosts, on the appservers, but not on the loadbalancers.</p>
+
+<p><a href="https://docs.ansible.com/ansible/intro_inventory.html#groups-of-groups-and-group-variables">The documentation</a> has more information on hostgroups based on other groups.</p>
+
+<h3>The playbook</h3>
+
+<p>The playbook (<code>deploy-vhosts.yml</code>) first was this:</p>
+
+<pre><code>---
+
+- hosts: appserver
+  roles:
+    - apache-vhost
+</code></pre>
+
+<p>After changing the hostgroup we need to add the specific role that deploys the certificates. We also put a <code>when</code> in place to make sure the two roles only run on the hosts where they should and not the other hosts:</p>
+
+<pre><code>---
+
+- hosts: ssl
+  roles:
+    - {role: apache-vhost, when: &quot;&#39;appserver&#39; in group_names&quot; }
+    - {role: sslcerts, when: &quot;&#39;loadbalancer&#39; in group_names &quot; }
+</code></pre>
+
+<h3>The group vars</h3>
+
+<p>The group vars for the appservers contain the following information to configure the virtual hosts:</p>
+
+<pre><code>---
+apache_vhost:
+  example.cluster.nl:
+    name: example.cluster.nl
+    docroot: /home/example-cluster/domains/example.cluster.nl/public-html/
+    webuser: example-cluster
+    ssl_name: example.cluster.nl
+    serveraliases:
+      - www.example.cluster.nl
+
+  example2.cluster.nl:
+    name: example2.cluster.nl
+    docroot: /home/example2-cluster/domains/example2.cluster.nl/public-html/
+    webuser: example2-cluster
+    ssl_name: example2.cluster.nl
+    serveraliases:
+      - www.example2.cluster.nl
+</code></pre>
+
+<p>The problem is that, when the deploy vhosts playbook in run on the loadbalancers, they cannot access these variables since they are not in the same group.</p>
+
+<h3>The role</h3>
+
+<p>The role <code>sslcerts</code> has one task file and one handler (<code>restart haproxy</code>). It makes sure the folder for the certificates exists and it places the certificate files there. There are extra when statements to make sure it only runs on the loadbalancers.</p>
+
+<pre><code>- name: create ssl folder
+  file:
+    path=/etc/ssl/cluster/
+    state=directory
+    owner=root
+    group=root
+  when: &quot;&#39;loadbalancer&#39; in group_names&quot;
+  tags: ssl
+
+- name: place certificates
+  copy:
+    src=files/ssl/{{ item.value.ssl_name }}.pem
+    dest=/etc/ssl/cluster/{{ item.value.ssl_name }}.pem
+  with_dict: &#39;{{ apache_vhost }}&#39;
+  when: &quot;&#39;loadbalancer&#39; in group_names&quot;
+  notify: restart haproxy
+  tags: ssl
+</code></pre>
+
+<h3>The crux</h3>
+
+<p>Even after configuring the special playbook that runs on all the hosts, the loadbalancers still cannot access the group variables from the appservers. The dirty hack part is that we symlink the group vars from the <code>appserver</code> folder to the <code>loadbalancer</code> folder:</p>
+
+<pre><code>ln -s /home/deploy/ansible/group_vars/appserver/apache-vhost.yml /home/deploy/ansible/group_vars/loadbalancer/apache-vhost-symlink.yml
+</code></pre>
+
+<p>Now, the loadbalancers have the group variable <code>apache_vhost</code> as well, and when the file in the <code>appserver</code> folder is changed, the <code>loadbalancer</code> file is as well because it&#39;s a symlink. </p>
+
+<h3>haproxy</h3>
+
+<p>haproxy in this case has one frontend where all traffic comes into, the appservers handle the different virtual hosts:</p>
+
+<pre><code>frontend https-in
+      mode http
+      bind 1.2.3.4:443 ssl crt /etc/ssl/cluster/ no-sslv3
+      acl secure dst_port eq 443
+      rsprep ^Set-Cookie:\ (.*) Set-Cookie:\ \1;\ Secure if secure
+      rspadd Strict-Transport-Security:\ max-age=31536000 if secure
+      option httplog
+      option forwardfor
+      option http-server-close
+      option httpclose
+      reqadd X-Forwarded-Proto:\ https
+      default_backend appserver
+</code></pre>
+
+<p>haproxy handles <code>sni</code> transparantly based on the requested hostname, if it finds the certificate in the folder <code>/etc/ssl/cluster/</code>. The files there are a concatenation of the public key, the private key and if needed the certificate chain. </p>
+
+<h3>Conclusion</h3>
+
+<p>In this case it might be better to change the haproxy playbook to handle this, or to change the group_vars to <code>all</code>. However, this environment has certain constraints set, so this &#39;suboptimal&#39; workaround works. </p>
+</div><hr>Tags: <a href="../tags/ansible.html" class="link">ansible, </a><a href="../tags/client-side-ssl.html" class="link">client-side-ssl, </a><a href="../tags/haproxy.html" class="link">haproxy, </a><a href="../tags/loadbalancer.html" class="link">loadbalancer, </a><a href="../tags/ssl.html" class="link">ssl, </a><div class="footer">
+                <hr>
+                <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
+                <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
+                <a href="/s/static/About.html">About</a><br />
+                </div>
+            </div>
+        </div>
+    </div>  
+    </div>
+    </div>
+     
+    <!-- Piwik --> 
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hosted-oswa.org/piwik/" : "http://hosted-oswa.org/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hosted-oswa.org/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+    </body>
+    </html>
+    

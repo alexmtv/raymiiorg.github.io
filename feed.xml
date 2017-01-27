@@ -7,6 +7,14 @@
             <atom:link href="https://raymii.org/s/feed.xml" rel="self" type="application/rss+xml" />
     
             <item>
+                <title>Ansible: access group vars for groups the current host is not a member of</title> 
+                <link>https://raymii.org/s/tutorials/Ansible_access_other_groups_group_vars.html</link> 
+                <guid>https://raymii.org/s/tutorials/Ansible_access_other_groups_group_vars.html</guid>
+                <description>This guide shows you how to access group variables for a group the current host is not a member of. In Ansible you can access other host variables using `hostvars['hostname']` but not group variables. The way described here is workable, but do I consider it a dirty hack. So why did I need this? I have a setup where ssl is offloaded by haproxy servers, but the virtual hosts and ssl configuration are defined in Apache servers. The loadbalancers and appservers are two different hostgroups, the ssl settings are in the appserver group_vars, which the hosts in the loadbalancer group need to access. The best way to do this is change the haproxy playbooks and configuration and define the certificates there, but in this specific case that wasn't a workable solution. Editing two yaml files (one for the appservers and one for the loadbalancers) was not an option in this situation.</description> 
+                <pubDate>Fri, 27 Jan 2017 00:00:00 GMT</pubDate>
+            </item>
+    
+            <item>
                 <title>haproxy: restrict specific URLs to specific IP addresses</title> 
                 <link>https://raymii.org/s/snippets/haproxy_restrict_specific_urls_to_specific_ip_addresses.html</link> 
                 <guid>https://raymii.org/s/snippets/haproxy_restrict_specific_urls_to_specific_ip_addresses.html</guid>
