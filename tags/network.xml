@@ -7,6 +7,14 @@
             <atom:link href="https://raymii.org/s/tags/network.xml" rel="self" type="application/rss+xml" />
     
             <item>
+                <title>Traceroute IPv6 to Smokeping Target config</title> 
+                <link>https://raymii.org/s/snippets/IPv6_Traceroute_to_Smokeping_Target_Config.html</link> 
+                <guid>https://raymii.org/s/snippets/IPv6_Traceroute_to_Smokeping_Target_Config.html</guid>
+                <description>This little one-liner converts the output of traceroute for IPv6 to Smokeping Target output. This way you can build your smokeping config faster.</description> 
+                <pubDate>Sun, 05 Mar 2017 00:00:00 GMT</pubDate>
+            </item>
+    
+            <item>
                 <title>Keepalived notify script, execute action on failover</title> 
                 <link>https://raymii.org/s/tutorials/Keepalived_notify_script_execute_action_on_failover.html</link> 
                 <guid>https://raymii.org/s/tutorials/Keepalived_notify_script_execute_action_on_failover.html</guid>

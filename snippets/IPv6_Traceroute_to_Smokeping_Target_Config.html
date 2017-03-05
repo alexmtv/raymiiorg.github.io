@@ -2,7 +2,7 @@
     <!DOCTYPE html>
     <html lang="en">
         <head>
-        <title>CIDR Cheatsheet - Raymii.org</title>
+        <title>Traceroute IPv6 to Smokeping Target config - Raymii.org</title>
         <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
         <link href="/s/inc/css/light.css" rel="stylesheet"  />
         <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
@@ -57,7 +57,7 @@
            <div class="col-md-8 col-sm-8"> 
                 <div class="inner">
 
-           <h2 class='headheader'>CIDR Cheatsheet</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../software/index.html" class="link">Software</a></li><li><a href="CIDR-Cheatsheet.html" class="link">CIDR Cheatsheet</a></li></ul><p><small>11-12-2012</small> | <small>Frank Shafer</small></p><div class='ad'>
+           <h2 class='headheader'>Traceroute IPv6 to Smokeping Target config</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../snippets/index.html" class="link">Snippets</a></li><li><a href="IPv6_Traceroute_to_Smokeping_Target_Config.html" class="link">Traceroute IPv6 to Smokeping Target config</a></li></ul><p><small>05-03-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
                             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                             <!-- voorartikel -->
                             <ins class="adsbygoogle"
@@ -67,58 +67,127 @@
                             <script>
                             (adsbygoogle = window.adsbygoogle || []).push({});
                             </script>
-                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><pre><code>CIDR        Total number    Network             Description:
-Notation:   of addresses:   Mask:
---------------------------------------------------------------
-/0          4,294,967,296   0.0.0.0             Every Address
-/1          2,147,483,648   128.0.0.0           128 /8 nets
-/2          1,073,741,824   192.0.0.0           64 /8 nets
-/3          536,870,912     224.0.0.0           32 /8 nets
-/4          268,435,456     240.0.0.0           16 /8 nets
-/5          134,217,728     248.0.0.0           8 /8 nets
-/6          67,108,864      252.0.0.0           4 /8 nets
-/7          33,554,432      254.0.0.0           2 /8 nets
-/8          16,777,214      255.0.0.0           1 /8 net (Class A)
---------------------------------------------------------------
-/9          8,388,608       255.128.0.0         128 /16 nets
-/10         4,194,304       255.192.0.0         64 /16 nets
-/11         2,097,152       255.224.0.0         32 /16 nets
-/12         1,048,576       255.240.0.0         16 /16 nets
-/13         524,288         255.248.0.0         8 /16 nets
-/14         262,144         255.252.0.0         4 /16 nets
-/15         131.072         255.254.0.0         2 /16 nets
-/16         65,536          255.255.0.0         1 /16 (Class B)
---------------------------------------------------------------
-/17         32,768          255.255.128.0       128 /24 nets
-/19         16,384          255.255.192.0       64 /24 nets
-/19         8,192           255.255.224.0       32 /24 nets
-/20         4,096           255.255.240.0       16 /24 nets
-/21         2,048           255.255.248.0       8 /24 nets
-/22         1,024           255.255.252.0       4 /24 nets
-/23         512             255.255.254.0       2 /24 nets
-/24         256             255.255.255.0       1 /24 (Class C)
---------------------------------------------------------------
-/25         128             255.255.255.128     Half of a /24
-/26         64              255.255.255.192     Fourth of a /24
-/27         32              255.255.255.224     Eighth of a /24
-/28         16              255.255.255.240     1/16th of a /24
-/29         8               255.255.255.248     5 Usable addresses
-/30         4               255.255.255.252     1 Usable address
-/31         2               255.255.255.254     Unusable
-/32         1               255.255.255.255     Single host
---------------------------------------------------------------
-Reserved Space:
-    0.0.0.0/8   
-    127.0.0.0/8
-    192.0.2.0/24
-    10.0.0.0/8
-    172.16.0.0/12
-    192.168.0.0/16
-    169.254.0.0/16
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>This little one-liner converts the output of traceroute for IPv6 to Smokeping Target output. This way you can build your smokeping config faster.</p>
+
+<p>Do note you have to setup your IPv6 probe as described <a href="http://oss.oetiker.ch/smokeping/probe/FPing6.en.html">here</a>.</p>
+
+<p>I had only setup my smokepings for IPv4. Recently we had an issue were network config was borked and the whole IPv4 network was not announced via BGP anymore. I was at home troubleshooting, but finding nothing since I have native IPv6 and that part still worked. My Smokeping did show loss, and that explicitly uses IPv4. That helped with the debugging a lot. I have a <a href="https://raymii.org/s/snippets/Traceroute_to_Smokeping_Target_Config.html">IPv4</a> version of this article as well.</p>
+
+<p>You can see smokeping in action <a href="http://smokeping.serverius.eu/">here at serverius</a>. More info about <a href="http://oss.oetiker.ch/smokeping/">Smokeping here on the website</a>.</p>
+
+<h3>Traceroute one liner</h3>
+
+<p>This is the command to get the Smokeping config:</p>
+
+<pre><code>traceroute -6 -w 3 revspace.nl | grep -v &quot;*&quot; | sed -e &#39;s/(//g&#39; -e &#39;s/)//g&#39; | awk &#39;{ gsub(/\./,&quot;_&quot;,$2); gsub(/\:/,&quot;_&quot;,$2); print &quot;++ &quot;$2&quot;\nmenu = &quot;$2&quot; - &quot;$3&quot;\ntitle = &quot;$2&quot; - &quot;$3&quot;\nhost = &quot;$3&quot;\n&quot;}&#39;
 </code></pre>
 
-<p>Via: <a href="http://www.techstaty.com/cidr-cheat-sheet/">http://www.techstaty.com/cidr-cheat-sheet/</a></p>
-</div><hr>Tags: <a href="../tags/cidr.html" class="link">cidr, </a><a href="../tags/ipv4.html" class="link">ipv4, </a><a href="../tags/network.html" class="link">network, </a><a href="../tags/subnet.html" class="link">subnet, </a><div class="footer">
+<p>The &quot;*&quot; are grepped out, the <code>()</code> are removed from the IP address and we also replace <code>.</code> and <code>:</code> in the hostname, the Smokeping config doesn&#39;t allow that.</p>
+
+<h3>Example</h3>
+
+<p>This will give you something like this (for <a href="https://tweakers.net">tweakers.net</a>:</p>
+
+<pre><code>++ lo0_dr11_d12_xs4all_net
+menu = lo0_dr11_d12_xs4all_net - 2001:888:1:1001::1
+title = lo0_dr11_d12_xs4all_net - 2001:888:1:1001::1
+host = 2001:888:1:1001::1
+
+++ 0_ae21_xr3_3d12_xs4all_net
+menu = 0_ae21_xr3_3d12_xs4all_net - 2001:888:1:4024::1
+title = 0_ae21_xr3_3d12_xs4all_net - 2001:888:1:4024::1
+host = 2001:888:1:4024::1
+
+++ 0_ge-0-2-0_xr1_sara_xs4all_net
+menu = 0_ge-0-2-0_xr1_sara_xs4all_net - 2001:888:1:4006::1
+title = 0_ge-0-2-0_xr1_sara_xs4all_net - 2001:888:1:4006::1
+host = 2001:888:1:4006::1
+
+++ 10ge12-12_core1_ams1_he_net
+menu = 10ge12-12_core1_ams1_he_net - 2001:470:0:e8::1
+title = 10ge12-12_core1_ams1_he_net - 2001:470:0:e8::1
+host = 2001:470:0:e8::1
+
+++ amsix_true_nl
+menu = amsix_true_nl - 2001:7f8:1::a501:5703:1
+title = amsix_true_nl - 2001:7f8:1::a501:5703:1
+host = 2001:7f8:1::a501:5703:1
+
+++ 2001_990_0_1378__1a
+menu = 2001_990_0_1378__1a - 2001:990:0:1378::1a
+title = 2001_990_0_1378__1a - 2001:990:0:1378::1a
+host = 2001:990:0:1378::1a
+
+++ tweakers_net
+menu = tweakers_net - 2001:9a8:0:e:1337:0:80:1
+title = tweakers_net - 2001:9a8:0:e:1337:0:80:1
+host = 2001:9a8:0:e:1337:0:80:1
+</code></pre>
+
+<p>This can be pasted right in to Smokeping&#39;s config.</p>
+
+<h3>Probe config</h3>
+
+<p>On Debian, add the FPing6 probe to <code>/etc/smokeping/config.d/Probes</code>:</p>
+
+<pre><code>*** Probes ***
+
++ FPing
+binary = /usr/bin/fping
+
++ FPing6
+binary = /usr/bin/fping6
+</code></pre>
+
+<p>The <a href="http://oss.oetiker.ch/smokeping/probe/FPing6.en.html">documentation</a> has a bigger example.</p>
+
+<p>The inherentance in the <code>Targets</code> configuration bit me a bit. If your default probe is <code>FPing</code>, you cannot add the <code>probe = FPing6</code> to a specific check. You need to make a seperate section. So instead of this:</p>
+
+<pre><code>+ cloudvps
+
+menu = cloudvps
+title = CloudVPS
+
+++ rt-eu01_cloudvps_nl
+menu = rt-eu01_cloudvps_nl - 80.246.207.201
+title = rt-eu01_cloudvps_nl - 80.246.207.201
+host = 80.246.207.201
+
+++ rt-eq01_cloudvps_nl
+menu = rt-eq01_cloudvps_nl - 2001:4cb8:40b:1::1d0a
+title = rt-eq01_cloudvps_nl - 2001:4cb8:40b:1::1d0a
+host = 2001:4cb8:40b:1::1d0a
+</code></pre>
+
+<p>You need to seperate the IPv6 hosts out to a new section:</p>
+
+<pre><code>+ cloudvpsv6
+
+menu = cloudvpsv6
+title = CloudVPS IPv6
+probe = FPing6
+
+++ rt-eq01_cloudvps_nl
+menu = rt-eq01_cloudvps_nl - 2001:4cb8:40b:1::1d0a
+title = rt-eq01_cloudvps_nl - 2001:4cb8:40b:1::1d0a
+host = 2001:4cb8:40b:1::1d0a
+</code></pre>
+
+<h3>No IPv6?</h3>
+
+<p>If a service doesn&#39;t have IPv6 setup, it will fail:</p>
+
+<pre><code>reddit.com: Name or service not known
+Cannot handle &quot;host&quot; cmdline arg `reddit.com&#39; on position 1 (argc 4)
+</code></pre>
+
+<p>I use the following version of Traceroute:</p>
+
+<pre><code>$ traceroute -V
+Modern traceroute for Linux, version 2.1.0
+Copyright (c) 2016  Dmitry Butskoy,   License: GPL v2 or any later
+</code></pre>
+</div><hr>Tags: <a href="../tags/ipv4.html" class="link">ipv4, </a><a href="../tags/ipv6.html" class="link">ipv6, </a><a href="../tags/network.html" class="link">network, </a><a href="../tags/smokeping.html" class="link">smokeping, </a><a href="../tags/traceroute.html" class="link">traceroute, </a><div class="footer">
                 <hr>
                 <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
                 <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
