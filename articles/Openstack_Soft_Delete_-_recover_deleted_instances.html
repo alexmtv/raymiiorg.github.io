@@ -1,0 +1,273 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+        <title>Openstack Soft Delete - recover deleted instances - Raymii.org</title>
+        <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
+        <link href="/s/inc/css/light.css" rel="stylesheet"  />
+        <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
+        <script src="/s//inc/js/toc.js" type="text/javascript"></script>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <link href="inc/img/icons/iphone.png" rel="apple-touch-icon" />
+        <link href="inc/img/icons/ipad.png" rel="apple-touch-icon" sizes="76x76" />
+        <link href="inc/img/icons/iphone-retina.png" rel="apple-touch-icon" sizes="120x120" />
+        <link href="inc/img/icons/ipad-retina.png" rel="apple-touch-icon" sizes="152x152" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
+    </head>
+    <body>
+        <a id="top-of-page"></a>
+        <div class="container-fluid ">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-3 col-sm-3 max-200">
+                        <div class="well well-none"> 
+                            <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
+                            <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
+                        </div>
+          
+
+    
+    <form role="search" action="https://encrypted.google.com/search">
+        <div class="form-group">
+          <input type="hidden" name="as_sitesearch" value="raymii.org">
+          <input type="hidden" name="as_qdr" value="all">
+          <input type="text" name="as_q" class="form-control" placeholder="Search">
+        </div>
+      </form>
+      <div class="menu"><ul class="nav nav-pills nav-stacked"><li><a href="/s/index.html" class="special-menu">Home</a></li><li class='bottom-spacing'><a href="/s/everything.html" class="special-menu">All Pages</a></li><li class='hideifsmall'><a href="/s/tags/bash.html" class="link">Bash</a></li><li class='hideifsmall'><a href="/s/tags/monitoring.html" class="link">Monitoring</a></li><li class='hideifsmall'><a href="/s/tags/ssl.html" class="link">SSL</a></li><li class='hideifsmall'><a href="/s/tags/debian.html" class="link">Debian</a></li><li class='hideifsmall'><a href="/s/tags/python.html" class="link">Python</a></li><li class='hideifsmall'><a href="/s/tags/vpn.html" class="link">VPN</a></li><li class='hideifsmall'><a href="/s/tags/ubuntu.html" class="link">Ubuntu</a></li><li class='hideifsmall'><a href="/s/tags/nginx.html" class="link">nginx</a></li><li class='hideifsmall'><a href="/s/tags/openstack.html" class="link">Openstack</a></li><li class='hideifsmall'><a href="/s/tags/ansible.html" class="link">Ansible</a></li></ul>            
+               <!-- advertisement start -->
+                <a href="http://clients.inceptionhosting.com/aff.php?aff=083">Inception Hosting Affiliate Link</a><br />
+                <a href="https://www.digitalocean.com/?refcode=7435ae6b8212">Digital Ocean Affiliate Link, $10 free credit.</a><br />
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- Raymii-2 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:200px;height:200px"
+                     data-ad-client="ca-pub-7993642564731324"
+                     data-ad-slot="9322003332"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                <!-- advertisement end -->
+                </div>
+           </div>  
+           <div class="col-md-8 col-sm-8"> 
+                <div class="inner">
+
+           <h2 class='headheader'>Openstack Soft Delete - recover deleted instances</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../articles/index.html" class="link">Articles</a></li><li><a href="Openstack_Soft_Delete_-_recover_deleted_instances.html" class="link">Openstack Soft Delete - recover deleted instances</a></li></ul><p><small>18-03-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p><img src="https://raymii.org/s/inc/img/ocata-lg.jpg"></p>
+
+<p>This article contains both an end user and OpenStack administrator guide to set up and use <code>soft_delete</code> with OpenStack Nova. If an instance is deleted with nova delete, it&#39;s gone right away. If <code>soft_delete</code> is enabled, it will be queued for deletion for a set amount of time, allowing end-users and administrators to restore the instance with the <code>nova restore</code> command. This can save your ass (or an end-users bottom) if the wrong instance is removed. Setup is simple, just one variable in <code>nova.conf</code>. There are some caveats we&#39;ll also discuss here.</p>
+
+<h3>Pro&#39;s and Con&#39;s</h3>
+
+<p>There are some considorations you need to make when enabling soft-deletion. I&#39;ll discuss them below.</p>
+
+<p>The most important one is that instances are not deleted right away. If you&#39;re a heavy API user, herding cattle (spawning and deleting many instances all the time), capacity management might be a problem. </p>
+
+<p><img src="https://raymii.org/s/inc/img/cloudscaling_pets_cattle_servers.jpg"></p>
+
+<p>Let&#39;s say you set the <code>reclaim_instance_interval</code> to 3 days (because, what if a user removes an instance during the weekend, this is a ass-saver after all), but you spawn and remove about a hundred servers every day. (Let&#39;s assume you have cloud-ready applications, good for you). Normally, the capacity (RAM, disk, cpu, volumes, floating IP&#39;s, security groups) used by these VM&#39;s is removed right away. With soft-delete enabled, all of this will be reserved until after 3 days in this case. This means you need to have capacity to store 300 instances extra. This can be mitigated by using <code>nova force-delete</code>. This delete function skips the <code>SOFT_DELETE</code> state entirely. Or you can set the <code>reclaim_instance_interval</code> to a smaller amount of time. This is a consideration you should plan for based on the available infrastructure and usage patterns in your cloud.</p>
+
+<p>The second caveat is that when you delete an instance, attached resources (Volumes, Floating IP&#39;s, Security Groups) stay reserved. If you need a volume that was attached to an instance that is soft-deleted, you first need to <code>recover</code> that instance, then detach the volume (or other resource) and then delete the instance again. Or detach the resource before you delete the instance. Normally, when deleting an instance, the resources are released automatically. If you use the API for resource management you <a href="https://github.com/hashicorp/terraform/issues/5104">need to</a> take this into consideration as well.</p>
+
+<p>The third is that a <code>nova list</code> doesn&#39;t show instances in the <code>SOFT_DELETED</code> state. Recovering can only be done with the UUID, so you must have noted that somewhere, or do a database query if you have that level of access. If a floating IP or volume is still attached to the VM, you are able to get the UUID from there, otherwise you&#39;re out of luck.</p>
+
+<p>The positive part of soft-delete is that you can recover instances. I work for a large cloud provider and the amount of times we get the question from end users will suprise you. Higher up however decided that this feature should not be enabled, so we always have to tell users something along the lines of &#39;Time to restore your backups&#39;. Mostly this is because of the extreme amount of resources being created and deleted, also because you just should have good backups (regularly tested). </p>
+
+<p>In a private cloud setting this is a much better argument. Users there will probably remove the wrong instance and panic, call you, and you will be the hero of the day. In a public cloud this can also be a feature, marketing wise.</p>
+
+<p>Now, after all the points, let&#39;s continue on to the setup.</p>
+
+<h3>Administrator setup (reclaim<em>instance</em>interval)</h3>
+
+<p>In your <code>/etc/nova/nova.conf</code> file, there is a (commented by default) variable <code>reclaim_instance_interval</code>. This is the amount of time, in seconds, that an instance will at least be in the state <code>SOFT_DELETED</code>. There is a scheduler task that runs every <code>$reclaim_instance_interval</code> seconds. It checks if an instance has the state <code>SOFT_DELETED</code>, and if it is at least <code>reclaim_instance_interval</code> seconds in this state. If so, it will be removed permanently. If you set <code>reclaim_instance_interval</code> to 4 hours, and an instance is deleted just when this task runs, it might overlap and will be removed after 8 hours, since one of the two conditions is not met. In practice this won&#39;t happen very often.</p>
+
+<p>You need to deploy this change to <code>nova.conf</code> on all your <code>nova-compute</code> servers and everywhere the <code>nova-api</code> runs (<code>scheduler</code>, <code>conducter</code>, etc). Restart the services afterwards.</p>
+
+<h4>Testing</h4>
+
+<p>After you&#39;ve enabled soft-delete, create an instance (<code>nova boot</code>), attach a volume and make sure it boots:</p>
+
+<pre><code>$ nova show 905b8228-6a0b-48ec-a7e6-e2e7b7460004
++--------------------------------------+----------------------------------------------------------------------------------------------------+
+| Property                             | Value                                                                                              |
++--------------------------------------+----------------------------------------------------------------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                                                                             |
+| OS-EXT-AZ:availability_zone          | NL1                                                                                                |
+| OS-EXT-SRV-ATTR:host                 | compute-3-7                                                                                        |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | compute-3-7                                                                                        |
+| OS-EXT-SRV-ATTR:instance_name        | instance-00044243                                                                                  |
+| OS-EXT-STS:power_state               | 1                                                                                                  |
+| OS-EXT-STS:task_state                | -                                                                                                  |
+| OS-EXT-STS:vm_state                  | active                                                                                             |
+| OS-SRV-USG:launched_at               | 2017-03-18T10:21:25.000000                                                                         |
+| OS-SRV-USG:terminated_at             | -                                                                                                  |
+| accessIPv4                           |                                                                                                    |
+| accessIPv6                           |                                                                                                    |
+| config_drive                         |                                                                                                    |
+| created                              | 2017-03-18T10:20:46Z                                                                               |
+| flavor                               | Tiny (199)                                                                                         |
+| hostId                               | 3d7ed510fb3dfa987e7eb7ae6f70106917a5feb57fe56ef740a1d9ed                                           |
+| id                                   | 905b8228-6a0b-48ec-a7e6-e2e7b7460004                                                               |
+| image                                | CloudVPS Ubuntu 16.04 (cda1773d-064c-4750-9c41-081467fc6575)                                       |
+| metadata                             | {}                                                                                                 |
+| name                                 | test-delete                                                                                        |
+| net-public network                   | 185.3.210.299                                                                                     |
+| os-extended-volumes:volumes_attached | [{&quot;id&quot;: &quot;6a664e03-46bf-4f7b-9eb7-14d16d305a6d&quot;}]                                                   |
+| progress                             | 0                                                                                                  |
+| security_groups                      | built-in-allow-icmp, built-in-allow-web, built-in-provider-access, built-in-remote-access, default |
+| status                               | ACTIVE                                                                                             |
+| updated                              | 2017-03-18T10:21:25Z                                                                               |
++--------------------------------------+----------------------------------------------------------------------------------------------------+
+</code></pre>
+
+<p>Delete the instance:</p>
+
+<pre><code>$ nova delete 905b8228-6a0b-48ec-a7e6-e2e7b7460004
+Request to delete server 905b8228-6a0b-48ec-a7e6-e2e7b7460004 has been accepted.
+</code></pre>
+
+<p>A <code>nova show</code> will now show the instance as SOFT_DELETED:</p>
+
+<pre><code>$ nova show 905b8228-6a0b-48ec-a7e6-e2e7b7460004
++--------------------------------------+----------------------------------------------------------------------------------------------------+
+| Property                             | Value                                                                                              |
++--------------------------------------+----------------------------------------------------------------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                                                                             |
+| OS-EXT-AZ:availability_zone          | NL1                                                                                                |
+| OS-EXT-SRV-ATTR:host                 | compute-3-7                                                                                        |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | compute-3-7                                                                                        |
+| OS-EXT-SRV-ATTR:instance_name        | instance-00044243                                                                                  |
+| OS-EXT-STS:power_state               | 4                                                                                                  |
+| OS-EXT-STS:task_state                | -                                                                                                  |
+| OS-EXT-STS:vm_state                  | soft-delete                                                                                        |
+| OS-SRV-USG:launched_at               | 2017-03-18T10:21:25.000000                                                                         |
+| OS-SRV-USG:terminated_at             | -                                                                                                  |
+| accessIPv4                           |                                                                                                    |
+| accessIPv6                           |                                                                                                    |
+| config_drive                         |                                                                                                    |
+| created                              | 2017-03-18T10:20:46Z                                                                               |
+| flavor                               | Tiny (199)                                                                                         |
+| hostId                               | 3d7ed510fb3dfa987e7eb7ae6f70106917a5feb57fe56ef740a1d9ed                                           |
+| id                                   | 905b8228-6a0b-48ec-a7e6-e2e7b7460004                                                               |
+| image                                | CloudVPS Ubuntu 16.04 (cda1773d-064c-4750-9c41-081467fc6575)                                       |
+| key_name                             | Remy                                                                                               |
+| metadata                             | {}                                                                                                 |
+| name                                 | test-delete                                                                                        |
+| net-public network                   | 185.3.210.227                                                                                      |
+| os-extended-volumes:volumes_attached | [{&quot;id&quot;: &quot;6a664e03-46bf-4f7b-9eb7-14d16d305a6d&quot;}]                                                   |
+| security_groups                      | built-in-allow-icmp, built-in-allow-web, built-in-provider-access, built-in-remote-access, default |
+| status                               | SOFT_DELETED                                                                                       |
+| updated                              | 2017-03-18T10:50:25Z                                                                               |
++--------------------------------------+----------------------------------------------------------------------------------------------------+
+</code></pre>
+
+<p>The volume will still show as attached:</p>
+
+<pre><code>$ cinder show 6a664e03-46bf-4f7b-9eb7-14d16d305a6d
+
++--------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Property                       | Value                                                                                                                                                                                               |
++--------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| attachments                    | [{&#39;id&#39;: &#39;6a664e03-46bf-4f7b-9eb7-14d16d305a6d&#39;, &#39;host_name&#39;: None, &#39;device&#39;: &#39;/dev/sdb&#39;, &#39;server_id&#39;: &#39;905b8228-6a0b-48ec-a7e6-e2e7b7460004&#39;, &#39;volume_id&#39;: &#39;6a664e03-46bf-4f7b-9eb7-14d16d305a6d&#39;}] |
+| availability_zone              | NL1                                                                                                                                                                                                 |
+| bootable                       | false                                                                                                                                                                                               |
+| created_at                     | 2017-03-18T10:47:14.000000                                                                                                                                                                          |
+| description                    | None                                                                                                                                                                                                |
+| encrypted                      | False                                                                                                                                                                                               |
+| id                             | 6a664e03-46bf-4f7b-9eb7-14d16d305a6d                                                                                                                                                                |
+| metadata                       | {&#39;readonly&#39;: &#39;False&#39;, &#39;attached_mode&#39;: &#39;rw&#39;}                                                                                                                                                        |
+| name                           | test-delete                                                                                                                                                                                         |
+| os-vol-host-attr:host          | zfs-3-4                                                                                                                                                                                             |
+| os-vol-mig-status-attr:migstat | None                                                                                                                                                                                                |
+| os-vol-mig-status-attr:name_id | None                                                                                                                                                                                                |
+| size                           | 8                                                                                                                                                                                                   |
+| snapshot_id                    | None                                                                                                                                                                                                |
+| source_volid                   | None                                                                                                                                                                                                |
+| status                         | in-use                                                                                                                                                                                              |
+| volume_type                    | None                                                                                                                                                                                                |
++--------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+</code></pre>
+
+<p>Horizon and other interfaces will probably show it as well:</p>
+
+<p><img src="https://raymii.org/s/inc/img/soft-delete.png"></p>
+
+<p><img src="https://raymii.org/s/inc/img/soft-delete2.png"></p>
+
+<p>Using the <code>nova restore</code> command we can bring back the server:</p>
+
+<pre><code>$ nova restore 905b8228-6a0b-48ec-a7e6-e2e7b7460004
+</code></pre>
+
+<p>There is no output. A <code>nova show</code> will show the server back in <code>ACTIVE</code> state, it will boot up as if it had a regular shutdown.</p>
+
+<p>Now do this again and await the scheduler. If you then do a <code>nova show</code>, the instance should be removed and the volume should be released.</p>
+
+<h3>End user usage</h3>
+
+<p>The <code>nova restore</code> action is by default not admin only. If you have a UUID you can restore an instance, if the public cloud provider has enabled this feature. </p>
+
+<p>To test if it is enabled, just remove an instance and see if it goes into the <code>SOFT_DELETED</code> state with <code>nova show</code>. If so, send them a message / ticket asking what the scheduler timeout is, how long you can recover the instance.</p>
+
+<h3>Database query to get all soft_deleted instances</h3>
+
+<p>If you manage a private cloud and someone calls you to recover their instance, if you have access to the database of nova, you can execute the following query to get all instances in soft<em>deleted state with their UUID. The caller will probably have a name, and otherwise a tenant</em>id helps as well. Then just do a <code>nova recover</code> and you&#39;re all set:</p>
+
+<pre><code>SELECT uuid,hostname,project_id FROM nova.instances WHERE vm_state = &#39;soft-delete&#39;;
+</code></pre>
+
+<p>Example output:</p>
+
+<pre><code>+--------------------------------------+--------------------+----------------------------------+
+| uuid                                 | hostname           | project_id                       |
++--------------------------------------+--------------------+----------------------------------+
+| 8b6f7517-8155-463a-a277-e08d5597c1cd | test               | c3347bc952eb4904bb922c379beb1932 |
+| 73e6f3bf-e3b8-432f-b6ce-4208f476b8f9 | khjkjhkjhjkhkhkhjk | e80a4d46437446b1b51d57ecc566f9e4 |
+| 169c8696-d831-4331-8a7e-831b1526bbac | jkhjkhkh           | 3335ae642c4a42549b7a4489adf98d7c |
+| 8c7a7c1f-bfa9-41cc-8172-9fa190f3ff9d | c7-test            | e80a4d46437446b1b51d57ecc566f9e4 |
+| 099b37fa-04f8-4561-a6f4-e5d9d0bd9223 | lkjlkjlkj          | e80a4d46437446b1b51d57ecc566f9e4 |
+| 905b8228-6a0b-48ec-a7e6-e2e7b7460004 | test-delete        | 3335ae642c4a42549b7a4489adf98d7c |
++--------------------------------------+--------------------+----------------------------------+
+6 rows in set (0.20 sec)
+</code></pre>
+</div><hr>Tags: <a href="../tags/backup.html" class="link">backup, </a><a href="../tags/cloud.html" class="link">cloud, </a><a href="../tags/compute.html" class="link">compute, </a><a href="../tags/nova.html" class="link">nova, </a><a href="../tags/openstack.html" class="link">openstack, </a><a href="../tags/soft-delete.html" class="link">soft-delete, </a><div class="footer">
+                <hr>
+                <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
+                <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
+                <a href="/s/static/About.html">About</a><br />
+                </div>
+            </div>
+        </div>
+    </div>  
+    </div>
+    </div>
+     
+    <!-- Piwik --> 
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hosted-oswa.org/piwik/" : "http://hosted-oswa.org/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hosted-oswa.org/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+    </body>
+    </html>
+    
