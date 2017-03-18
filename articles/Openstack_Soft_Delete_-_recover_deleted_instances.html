@@ -91,13 +91,13 @@
 
 <p>Now, after all the points, let&#39;s continue on to the setup.</p>
 
-<h3>Administrator setup (reclaim<em>instance</em>interval)</h3>
+<h3>Administrator setup</h3>
 
 <p>In your <code>/etc/nova/nova.conf</code> file, there is a (commented by default) variable <code>reclaim_instance_interval</code>. This is the amount of time, in seconds, that an instance will at least be in the state <code>SOFT_DELETED</code>. There is a scheduler task that runs every <code>$reclaim_instance_interval</code> seconds. It checks if an instance has the state <code>SOFT_DELETED</code>, and if it is at least <code>reclaim_instance_interval</code> seconds in this state. If so, it will be removed permanently. If you set <code>reclaim_instance_interval</code> to 4 hours, and an instance is deleted just when this task runs, it might overlap and will be removed after 8 hours, since one of the two conditions is not met. In practice this won&#39;t happen very often.</p>
 
 <p>You need to deploy this change to <code>nova.conf</code> on all your <code>nova-compute</code> servers and everywhere the <code>nova-api</code> runs (<code>scheduler</code>, <code>conducter</code>, etc). Restart the services afterwards.</p>
 
-<h4>Testing</h4>
+<h3>Testing</h3>
 
 <p>After you&#39;ve enabled soft-delete, create an instance (<code>nova boot</code>), attach a volume and make sure it boots:</p>
 
