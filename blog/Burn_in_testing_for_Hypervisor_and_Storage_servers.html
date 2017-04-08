@@ -1,0 +1,321 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+        <title>Burn in testing for new Hypervisor and Storage server hardware - Raymii.org</title>
+        <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
+        <link href="/s/inc/css/light.css" rel="stylesheet"  />
+        <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
+        <script src="/s//inc/js/toc.js" type="text/javascript"></script>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <link href="inc/img/icons/iphone.png" rel="apple-touch-icon" />
+        <link href="inc/img/icons/ipad.png" rel="apple-touch-icon" sizes="76x76" />
+        <link href="inc/img/icons/iphone-retina.png" rel="apple-touch-icon" sizes="120x120" />
+        <link href="inc/img/icons/ipad-retina.png" rel="apple-touch-icon" sizes="152x152" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
+    </head>
+    <body>
+        <a id="top-of-page"></a>
+        <div class="container-fluid ">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-3 col-sm-3 max-200">
+                        <div class="well well-none"> 
+                            <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
+                            <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
+                        </div>
+          
+
+    
+    <form role="search" action="https://encrypted.google.com/search">
+        <div class="form-group">
+          <input type="hidden" name="as_sitesearch" value="raymii.org">
+          <input type="hidden" name="as_qdr" value="all">
+          <input type="text" name="as_q" class="form-control" placeholder="Search">
+        </div>
+      </form>
+      <div class="menu"><ul class="nav nav-pills nav-stacked"><li><a href="/s/index.html" class="special-menu">Home</a></li><li class='bottom-spacing'><a href="/s/everything.html" class="special-menu">All Pages</a></li><li class='hideifsmall'><a href="/s/tags/bash.html" class="link">Bash</a></li><li class='hideifsmall'><a href="/s/tags/monitoring.html" class="link">Monitoring</a></li><li class='hideifsmall'><a href="/s/tags/ssl.html" class="link">SSL</a></li><li class='hideifsmall'><a href="/s/tags/debian.html" class="link">Debian</a></li><li class='hideifsmall'><a href="/s/tags/python.html" class="link">Python</a></li><li class='hideifsmall'><a href="/s/tags/vpn.html" class="link">VPN</a></li><li class='hideifsmall'><a href="/s/tags/ubuntu.html" class="link">Ubuntu</a></li><li class='hideifsmall'><a href="/s/tags/nginx.html" class="link">nginx</a></li><li class='hideifsmall'><a href="/s/tags/openstack.html" class="link">Openstack</a></li><li class='hideifsmall'><a href="/s/tags/ansible.html" class="link">Ansible</a></li></ul>            
+               <!-- advertisement start -->
+                <a href="http://clients.inceptionhosting.com/aff.php?aff=083">Inception Hosting Affiliate Link</a><br />
+                <a href="https://www.digitalocean.com/?refcode=7435ae6b8212">Digital Ocean Affiliate Link, $10 free credit.</a><br />
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- Raymii-2 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:200px;height:200px"
+                     data-ad-client="ca-pub-7993642564731324"
+                     data-ad-slot="9322003332"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                <!-- advertisement end -->
+                </div>
+           </div>  
+           <div class="col-md-8 col-sm-8"> 
+                <div class="inner">
+
+           <h2 class='headheader'>Burn in testing for new Hypervisor and Storage server hardware</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../blog/index.html" class="link">Blog</a></li><li><a href="Burn_in_testing_for_Hypervisor_and_Storage_servers.html" class="link">Burn in testing for new Hypervisor and Storage server hardware</a></li></ul><p><small>08-04-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>This article talks over how and why to do burn in testing on hypervisor and storage servers. I work at a fairly large cloud provider, where we have a lot of hardware. Think thousands of hardware servers and multiple ten thousand harddisks. It&#39;s all technology, so stuff breaks, and at our scale, stuff breaks often. One of my pet projects for the last period has been to automate the burn-in testing for our virtualisation servers and the storage machines. We run OpenStack and use KVM for the hypervisors and a combination of different storage technology for the volume storage servers. Before they go in production, they are tested for a few days with very intensive automated usage. We&#39;ve noticed that they either fail then, or not. This saves us from having to migrate customers off of new production servers just a few days after they&#39;ve gone live. The testing is of course all automated.</p>
+
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring this site by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a></p>
+
+<p><img src="https://raymii.org/s/inc/img/busy-compute.jpg"></p>
+
+<blockquote>
+<p>A very busy hypervisor node</p>
+</blockquote>
+
+<h3>Preface</h3>
+
+<p>This article is not a copy and paste tutorial. It&#39;s more a walkthrough of the processes used and the thought process behind it. </p>
+
+<p>As said, I currently work at an OpenStack public cloud provider. That means that you can order a virtual server with us and get full administrative access to it. We use OpenStack, so you can also automate that part using the API and deploy instances automatically. Those virtual machines do need to run on actual hardware, which is where this article comes in. </p>
+
+<p><img src="https://raymii.org/s/inc/img/automate-all-the-things.png" width=600 height=400></p>
+
+<p>The regular process for deploying new hardware is fully automated. We&#39;ve got capacity management nailed down, once the OpenStack environment reaches a certain threshold, PDF&#39;s are automatically generated with investment requests and sent off to the finance department and the hardware is ordered. Then after some time, the nodes are shipped to the datacenters. Our datacenter team handles the racking and stacking. They setup the remote out of band management (ILO, iDrac, IPMI) and put the credentials into the PXE deployment servers (MaaS). </p>
+
+<p>The machine get&#39;s installed with the required OS automatically and after that the software stack (OpenStack) is installed. The machine firmwares are then updated to the latest versions, the rest of the cluster configuration is updated and it&#39;s ready to go. This is all done using Ansible, after the racking and stacking no human is involved. The only thing I have to do is to enable the <code>nova</code> or <code>cinder</code> service in OpenStack for that machine, and it&#39;s ready to go.</p>
+
+<p>The machine is automatically put into our monitoring system as well. We not only monitor the software side of things, like cpu load, disk usage, network connections, required services running, but also the hardware itself. Either via the remote out of band management or vendor provided tools (<code>omreport</code> anyone?). Which means that when a disk breaks, or a faulty memory module is found, our monitoring system alerts us and takes action automatically. When defective disks are detected, for example, the vendor automatically gets an RMA sent from our monitoring. Once a week a bunch of disks arrive at the office or the data center, depending on the vendor, and the datacenter team replace the faulty ones. Even the list with disks to replace by that team it automatically sent from the monitoring.</p>
+
+<p>This level of automation is required when you reach a scale like this. By automating all of this, our sysadmin team can focus on other things than the gruntwork of installing software or ordering hardware. This level of automation and monitoring also provides a layer to build stuff on top of, which we will be doing here.</p>
+
+<h3>The Problem</h3>
+
+<p>Stuff breaks. It&#39;s technology, so just like your car, things break. That&#39;s not a problem if you&#39;ve built your environment redundantly and highly available, but my experience is that not a lot of people do that.</p>
+
+<p>Hardware breakage usually doesn&#39;t mean downtime right away. Most parts are redundant. Multiple network interfaces that are bonded. Hard disks are in a form of RAID. Multiple PSU&#39;s on different power feeds. Multiple CPU&#39;s. Same goes for the network and other hardware. If a NIC fails, the bond will make sure the system keeps working. A drive dies? One of the spares is automatically put in the vdev or array and is rebuilt. Power goes out or a PSU blows? The other feed keeps running. However, it does mean that the faulty part needs to be replaced and possibly that customers that have instances or storage running on the hypervisor need to be migrated off there.</p>
+
+<p>Migrating instances and storage is something that we do a lot. Not just when there are problems with hardware, also for regular maintenance. Servers need updates to their software and firmware. The updates are done with Ansible and are automated. We&#39;ve written software that checks if there is enough cluster capacity and no issues in the monitoring. If so, it checks if a node had firmware updates outstanding, or more than 50 packages or a security package update outstanding, and if so it schedules a node for emptying out.</p>
+
+<p>We use live migrates and that process it automated as well, but it does add extra workload. Especially larger Windows VM&#39;s on KVM tend to lock up and break during a live-migrate, those need some tender love and care. Migrating storage (OpenStack Cinder Volumes) goes fine, never had any issues with that. </p>
+
+<p>Depending on the used configuration, OpenStack can use local storage or Ceph. With Ceph, live migrated of Volumes and Instances is very easy and fast. Local storage takes longer, since then the disks need to be copied over. </p>
+
+<p>Once the node is empty, it&#39;s updated, both software and firmware, with the same playbooks we use when a new node is installed. When that&#39;s done, it&#39;s rebooted and enabled back in OpenStack. This process is done a few times a day, making sure all the hardware is updated regularly. Due to our environment getting bigger and bigger, it takes longer to update all nodes, so we are testing if we can do more than one node at a time.</p>
+
+<p>New hardware, or hardware that has had issues and got replacement parts, tends to break more often than hardware that we have in use for a few months. Mostly hard disks or memory modules (ECC RAM), but I&#39;ve also seen PSU&#39;s blow, and once we had drops of solder breaking off a fibre channel NIC and causing a short. As said, it&#39;s technology, so stuff breaks. All covered by warranty, so not a big problem.</p>
+
+<h3>Simulating usage patterns</h3>
+
+<p>New hardware, or hardware that is put back into production after a repair wasn&#39;t getting a burn in test beforehand. Mostly because the amount of problems we experienced was small, just a one off most of the time. Now we are a lot larger, almost every week there is new hardware to be racked, so we see more problems. Just a scale issue, nothing to worry about. I suspect that when you are a large car shop you get more faulty returns than when your a local garage around the corner.</p>
+
+<p>Since we saw that hardware can break when it&#39;s being used regularly, we also must test it using mostly regular usage patterns. For compute nodes that means, install OpenStack and run VM&#39;s. For storage machines, that means, install OpenStack and the specific storage (ZFS, Ceph, Linux LVM) and generate IO. </p>
+
+<p>Because we do want to stress the node a bit, we generate usage that under normal conditions would count as abuse. We thought of bitcoin miners or BOINC (SETI@HOME), but decided that that wouldn&#39;t be reproducable enough. Therefore we went with regular tools, like <code>stress</code>, <code>stress-ng</code>, <code>memtest</code>, <code>dd</code> and <code>iperf</code>. </p>
+
+<p>Using OpenStack Userdata we provide a script to the instance that installs the packages and runs them in a specified order for a set amount of time. In my example every tool, testing a specific aspect (CPU, RAM, etc) runs for 15 minutes and then continues on to the next part. By creating a VM every 10 minutes, all usage patterns are equal. With that I mean that the CPU isn&#39;t hammered for 15 minutes, then the RAM, then the NIC. No, one instance is hammering the disk while another is using all it&#39;s CPU. </p>
+
+<p>The below image shows <code>htop</code> on one of our empty compute nodes:</p>
+
+<p><img src="https://raymii.org/s/inc/img/empty-compute.jpg"></p>
+
+<p>One thing we do not test enough is a huge amount of small VM&#39;s, thus having a lot of hardware interrupts and context switching. My testing uses a few large instances, which, in our case, tests the stuff we need. These burn in tests have saved us over two dozen nodes with issues going into production in the first three months of using this new procedure. In saved-man-hours on RMA and replacement that&#39;s almost three people fulltime for a week. Huge cost-savings.</p>
+
+<p>Let&#39;s continue on to the actual testing to see how much this node can be hammered.</p>
+
+<h3>Compute servers: stress, stress-ng and other tools</h3>
+
+<p>For the compute node benchmarking I&#39;m using an Ubuntu 14.04 VM. I&#39;m not able to share the Ansible playbooks we are using, but I can give you the manual commands. It&#39;s not that hard to put one and one together and create your own version. Or, if you don&#39;t get new hardware so often, just do it manually. </p>
+
+<p>In our specific OpenStack deployments we have an administrative user. We need this to override the scheduler and control on which compute node the VM&#39;s get spawned. We also have a special flavor with no IOPS or other usage limits. Regular customer instances have CPU, network and iops limits set and that we don&#39;t want in this case.</p>
+
+<p>By specifing the specific node in the <code>nova boot</code> command, we can force a VM to get spawned on that hypervisor:</p>
+
+<pre><code>nova boot --flavor=&quot;nolimit&quot; --image &quot;Ubuntu 14.04&quot; --nic net-id=00000000-0000-0000-0000-000000000000  --availability-zone NL1:compute-x-y
+</code></pre>
+
+<p>This does allow you to overload the hypervisor with instances. In our case it either cannot boot them and the logs say, cannot allocate memory. Or, the out-of-memory killer on the hypervisor just kills the <code>qemu</code> process and the instance is in state stopped. The nova instance action list doesn&#39;t show that action (because it went outside of nova).</p>
+
+<h4>Out of memory</h4>
+
+<p>Inside the instances it&#39;s important to disable the linux OOM killer. Otherwise it will stop your stress tests. You can do this on the hypervisor as well, but that might have unexpected side effects. Make sure you have out of band access so that you can reboot a node when it has hung itself up to a tree.</p>
+
+<p>Here&#39;s how to disable the OOM killer inside of your VM:</p>
+
+<pre><code>sysctl vm.overcommit_memory=2
+</code></pre>
+
+<p>If you want it to survive a reboot, place it in <code>sysctl.conf</code>:</p>
+
+<pre><code>echo &quot;vm.overcommit_memory=2&quot; &gt;&gt; /etc/sysctl.conf
+</code></pre>
+
+<h4>Install packages</h4>
+
+<p>The software we&#39;re using is all in the Ubuntu repositories. Install the packages:</p>
+
+<pre><code>apt-get -y install vnstat memtester stress stress-ng iperf
+</code></pre>
+
+<h4>CPU</h4>
+
+<p>The first part takes the CPU and uses <code>stress</code> to generate usage:</p>
+
+<pre><code>stress --cpu $(nproc) --timeout 900
+</code></pre>
+
+<p><code>nproc</code> gives me the number of cores available, which is usable for the VM. </p>
+
+<p>Stress with the <code>--cpu</code> parameter spins up processes in a tight loop calculating the <code>sqrt()</code> of a random number acquired with <code>rand()</code>.</p>
+
+<h4>Memory</h4>
+
+<p>For RAM, I found <code>stress</code> not getting that much result as its modern counterpart <code>stress-ng</code> did. <code>stress</code> doesn&#39;t have an option to utilize the RAM, <code>stress-ng</code> does:</p>
+
+<pre><code>stress-ng -vm 60 --vm-bytes 1G -t 900s --vm-method zero-one  --metrics-brief
+</code></pre>
+
+<p>As per the manpage, <code>-vm</code> starts N workers continuously calling mmap(2)/munmap(2) and writing to the allocated memory. <code>--vm-method zero-one</code> sets all memory bits to zero and then checks if any bits are not zero. Next, set all the memory bits to one and check if any bits are not one. Simple but effective test. My instance has 64 GB RAM so 60 workers using 1 GB each will fill the RAM up nicely.</p>
+
+<p>This memory abuse has triggered a lot of servers where one of the RAM DIMM&#39;s was bad. Even though we always have ECC RAM. Only after a few hours of running, not right away. </p>
+
+<h4>Disk</h4>
+
+<p>In our setup Ceph is mostly used, but we do also have local disks or volume servers (boot from volume) with ZFS. When a compute node has local disks we test them, otherwise it isn&#39;t much use since the storage servers are stressed differently.</p>
+
+<p><code>stress</code> has two different use cases for disk IO. The first does actual writes. </p>
+
+<pre><code>stress --hdd $(nproc) --hdd-bytes 100G --timeout 900 
+</code></pre>
+
+<p><code>--hdd</code> spawns N workers spinning on <code>write()</code>/<code>unlink()</code>. <code>--hdd-bytes</code> write B bytes per hdd worker (default is 1GB). </p>
+
+<pre><code>stress --io $(nproc) --timeout 900 
+</code></pre>
+
+<p><code>--io</code> spawns N workers spinning on <code>sync()</code>. </p>
+
+<p>Below is a screenshot of <code>iotop</code> on the compute node when a burn-in test is running on disk io with these tests:</p>
+
+<p><img src="https://raymii.org/s/inc/img/iops-compute.jpg"></p>
+
+<p>There have been four SSD&#39;s so far that needed replacing when these tests ran for a day. On average that suprised me, since I suspected it to be a lot more. </p>
+
+<h4>Network</h4>
+
+<p>For the sake of testing we also do a speedtest to an internal <code>iperf</code> server. I haven&#39;t seen any network cards fail yet. It is however nice that we can utilize the network card to it&#39;s fullest potential. I did find one card that had been configured in 10 mbit half-duplex mode because of a bad cable while running this test. However I was looking at it then, that&#39;s not something the monitoring tools report on (yet):</p>
+
+<pre><code>iperf --port 5002 --client speedtest.serverius.net --dualtest --time 900 --format M 
+</code></pre>
+
+<p>I replaced our <code>iperf</code> server address with a public <code>iperf</code> server address. </p>
+
+<h3>Storage servers: dd, dd and some more dd</h3>
+
+<p>Our storage servers are tested by doing a lot of disk activity. Since we do want to simulate actual usage, we install them as OpenStack Cinder servers and create volumes on them. Those volumes are then attached to an instance. On the instance, using <code>zfs</code>, we create a big pool (named <code>tank</code>) (no <code>raidZ</code> or mirroring) and one dataset (named <code>bullet</code>). Then, using <code>dd</code>, we first write zero&#39;s for a few hours. Afterwards, also using <code>dd</code> and random data from <code>openssl</code> (<code>/dev/urandom</code> is too slow), actual data is written. </p>
+
+<p>This could of course also be done with regular LVM volumes or <code>mdraid</code>. The tests however are adapted from work I already had laying around, that playbook already did <code>zfs</code>, so not much use in re-inventing the wheel.</p>
+
+<p>I&#39;m using Ubuntu 16.04 because of the ZFS support in there. First install it:</p>
+
+<pre><code>apt-get install zfsutils-linux zfs
+</code></pre>
+
+<p>Using <code>parted</code> with <code>ansible</code>, create a <code>gpt</code> partition:</p>
+
+<pre><code>- name: partition gpt
+  parted:
+    device: &quot;{{ item }}&quot;
+    label: gpt
+    state: present
+  with_items:
+    - /dev/sdb 
+    - /dev/sdc 
+    - /dev/sdd 
+    - /dev/...
+</code></pre>
+
+<p>Create the <code>zpool</code> and the <code>dataset</code> (again, with Ansible):</p>
+
+<pre><code>- name: Create the zpool     
+  shell: |       
+    zpool create tank /dev/sdb /dev/sdc /dev/sdd /dev/... &amp;&amp; \ 
+    zfs set compression=lz4 tank &amp;&amp; \       
+    zfs set atime=off tank     
+
+- name: Create fs
+  zfs:
+    name: tank/bullet
+    state: present
+</code></pre>
+
+<p>It will be automatically mounted and available under <code>/tank/bullet</code>. </p>
+
+<p>The first <code>dd</code> command:</p>
+
+<pre><code>dd if=/dev/zero of=/tank/bullet/bench bs=20000M count=1024 conv=fdatasync,notrunc
+</code></pre>
+
+<p>In my case the pool is 20 TB. Change where needed. Writing zero&#39;s will go full speed. If you want to test actual data writing, and thus bypass any cache or raid controllers, you need to generate random data. <code>/dev/random</code> and <code>/dev/urandom</code> are way to slow. I&#39;ve found the following command to get acceptable speeds:</p>
+
+<pre><code>openssl enc -aes-256-ctr -pass pass:&quot;$(dd if=/dev/urandom bs=128 count=1 2&gt;/dev/null | base64)&quot; -nosalt &lt; /dev/zero &gt; /tank/bullet/bench
+</code></pre>
+
+<p>This will use the <code>AES-NI</code> CPU instruction if your VM supports it. Let this run for a few hours and you will have all your disks written to. Do note that a full <code>zfs</code> will be extremely slow and behave weirdly. Throw away the VM and boot up a new one, rinse and repeat.</p>
+
+<h3>The result</h3>
+
+<p><img src="https://raymii.org/s/inc/img/iops-zfs.png"></p>
+
+<blockquote>
+<p>Writing zero&#39;s at near-line speed</p>
+</blockquote>
+
+<p><img src="https://raymii.org/s/inc/img/busy-compute.jpg"></p>
+
+<blockquote>
+<p>A busy hypervisor node</p>
+</blockquote>
+
+<p><img src="https://raymii.org/s/inc/img/busy-compute2.jpg"></p>
+
+<blockquote>
+<p>An even more busy hypervisor node</p>
+</blockquote>
+
+<p>You might get crashing servers or overheated switches. At one of my previous employers we actually found out that the fan rig wasn&#39;t correctly wired due to CPU heat alarms going off in the <code>ipmi</code>. Once again, make sure you have good monitoring and out of band access. This will happen often:</p>
+
+<p><img src="https://raymii.org/s/inc/img/notification-memory.png"></p>
+
+<p>Which is of course a good thing when the hardware is not yet in use. </p>
+</div><hr>Tags: <a href="../tags/cinder.html" class="link">cinder, </a><a href="../tags/cloud.html" class="link">cloud, </a><a href="../tags/compute.html" class="link">compute, </a><a href="../tags/nova.html" class="link">nova, </a><a href="../tags/openstack.html" class="link">openstack, </a><a href="../tags/storage.html" class="link">storage, </a><div class="footer">
+                <hr>
+                <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
+                <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
+                <a href="/s/static/About.html">About</a><br />
+                </div>
+            </div>
+        </div>
+    </div>  
+    </div>
+    </div>
+     
+    <!-- Piwik --> 
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hosted-oswa.org/piwik/" : "http://hosted-oswa.org/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hosted-oswa.org/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+    </body>
+    </html>
+    
