@@ -6,6 +6,12 @@
           http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     
         <url>
+            <loc>https://raymii.org/s/snippets/Check_HTTP_status_code_for_a_page_on_all_DNS_records.html</loc>
+            <lastmod>2017-04-09</lastmod>
+            <changefreq>weekly</changefreq>
+        </url>
+    
+        <url>
             <loc>https://raymii.org/s/blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html</loc>
             <lastmod>2017-04-08</lastmod>
             <changefreq>weekly</changefreq>

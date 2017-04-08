@@ -7,6 +7,14 @@
             <atom:link href="https://raymii.org/s/feed.xml" rel="self" type="application/rss+xml" />
     
             <item>
+                <title>Check HTTP status code for a page on all DNS records</title> 
+                <link>https://raymii.org/s/snippets/Check_HTTP_status_code_for_a_page_on_all_DNS_records.html</link> 
+                <guid>https://raymii.org/s/snippets/Check_HTTP_status_code_for_a_page_on_all_DNS_records.html</guid>
+                <description>This is a small snippet using curl to check the status code of a given URL on all DNS records for a given domain. This site has a few A records in round robin mode, and sometimes the automatic deployment fails. Using this query I can check which server is the culprit and fix it manually.</description> 
+                <pubDate>Sun, 09 Apr 2017 00:00:00 GMT</pubDate>
+            </item>
+    
+            <item>
                 <title>Burn in testing for new Hypervisor and Storage server hardware</title> 
                 <link>https://raymii.org/s/blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html</link> 
                 <guid>https://raymii.org/s/blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html</guid>
