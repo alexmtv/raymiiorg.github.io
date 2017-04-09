@@ -2,7 +2,7 @@
     <!DOCTYPE html>
     <html lang="en">
         <head>
-        <title>systemd - Raymii.org</title>
+        <title>Run software on the tty1 console instead of getty login on Ubuntu 14.04 and 16.04 - Raymii.org</title>
         <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
         <link href="/s/inc/css/light.css" rel="stylesheet"  />
         <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
@@ -15,7 +15,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
-        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/tags/systemd.xml" />
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
     </head>
     <body>
         <a id="top-of-page"></a>
@@ -26,7 +26,7 @@
                         <div class="well well-none"> 
                             <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
                             <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
-                            <h6><a href="https://raymii.org/s/tags/systemd.xml">RSS Feed</a></h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
                         </div>
           
 
@@ -57,7 +57,85 @@
            <div class="col-md-8 col-sm-8"> 
                 <div class="inner">
 
-           <h2>Tag systemd</h2><p>Tag pages have a different RSS feed with just the items per tag.</p><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../tags/index.html" class="link">Tags</a></li><li><a href="systemd.html" class="link">systemd</a></li></ul><ul class='list-group'><li class='list-group-item'><a href="../tutorials/IPSEC_L2TP_vpn_on_a_Raspberry_Pi_with_Arch_Linux.html" class="link">IPSEC L2TP VPN on Arch Linux on a Raspberry Pi with OpenSwan, xl2tpd and ppp</a></li><li class='list-group-item'><a href="../tutorials/Run_software_on_tty1_console_instead_of_login_getty.html" class="link">Run software on the tty1 console instead of getty login on Ubuntu 14.04 and 16.04</a></li><li class='list-group-item'><a href="../snippets/Systemd_Rosetta_Reference.html" class="link">Systemd rosetta / cheatsheet</a></li><li class='list-group-item'><a href="../blog/Transmission-Raspberry-Pi-Arch-Linux.html" class="link">Transmission Web on a Raspberry Pi with Arch Linux</a></li><li class='list-group-item'><a href="../tutorials/rc.local_support_on_Arch_Linux_and_systemd.html" class="link">rc.local support on Arch Linux with systemd</a></li><li class='list-group-item'><a href="../articles/systemd_dont_fear_change.html" class="link">systemd: Don't fear change</a></li></ul><div class="footer">
+           <h2 class='headheader'>Run software on the tty1 console instead of getty login on Ubuntu 14.04 and 16.04</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../tutorials/index.html" class="link">Tutorials</a></li><li><a href="Run_software_on_tty1_console_instead_of_login_getty.html" class="link">Run software on the tty1 console instead of getty login on Ubuntu 14.04 and 16.04</a></li></ul><p><small>10-04-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>Recently I wanted to change the default login prompt on the <code>tty1</code> console on an OpenStack instance to automatically run <code>htop</code>. Instead of logging in via the console, I wanted it to start up <code>htop</code> right away and nothing else. Ubuntu 14.04 uses <code>init</code> and Ubuntu 16.04 uses systemd. Both ways are shown in this tutorial.</p>
+
+<p>Here&#39;s what the default login prompt on the console looks:</p>
+
+<p><img src="https://raymii.org/s/inc/img/console1.png"></p>
+
+<p>And here is the result, <code>htop</code> running without ever logging in:</p>
+
+<p><img src="https://raymii.org/s/inc/img/console2.png"></p>
+
+<p>Do note that you loose the ability to login via the regular console this way. <code>ssh</code> is your only means of access. Do note that the software is run as root. If you for example want to run <code>vim</code> you also can escape to a shell. <code>htop</code> as far as I know doesn&#39;t allow command execution.</p>
+
+<p>On Ubuntu 14.04, edit the following file:</p>
+
+<pre><code>vim /etc/init/tty1.conf
+</code></pre>
+
+<p>Replace:</p>
+
+<pre><code>exec /sbin/getty -8 38400 tty1
+</code></pre>
+
+<p>with:</p>
+
+<pre><code>exec /usr/bin/htop &lt;/dev/tty1 &gt;/dev/tty1 2&gt;&amp;1
+</code></pre>
+
+<p>Use full paths and make sure output and input are redirected (<code>&lt;/dev/tty1 &gt;/dev/tty1 2&gt;&amp;1</code>).</p>
+
+<p>On Ubuntu 16.04 stuff changes due to <code>systemd</code>. No longer can you use output redirection, this is now all handled via <code>systemd</code>. Create an override folder for the <code>getty@tty1</code> service first:</p>
+
+<pre><code>mkdir /etc/systemd/system/getty@tty1.service.d/
+</code></pre>
+
+<p>Edit the override file:</p>
+
+<pre><code>vim /etc/systemd/system/getty@tty1.service.d/override.conf
+</code></pre>
+
+<p>Place the following:</p>
+
+<pre><code>[Service]
+ExecStart=
+ExecStart=-/usr/bin/htop
+StandardInput=tty
+StandardOutput=tty
+</code></pre>
+
+<p>Now reload the unit files and restart the service. <code>htop</code> should appear on your prompt:</p>
+
+<pre><code>systemctl daemon-reload; systemctl restart getty@tty1.service
+</code></pre>
+
+<p>Or just do a <code>reboot</code>.</p>
+
+<p>As a bonus, you can also install <code>hollywood</code>:</p>
+
+<pre><code>apt-get install tmux hollywood # fill your console with Hollywood melodrama technobabble
+</code></pre>
+
+<p>and set that up to autorun on the console. Use the following in the <code>systemd</code> file otherwise <code>byobu</code> will complain about wrong permissions on your homefolder:</p>
+
+<pre><code>/usr/bin/sudo -H /usr/bin/hollywood
+</code></pre>
+
+<p>Much fun:</p>
+
+<p><img src="https://raymii.org/s/inc/img/console3.png"></p>
+</div><hr>Tags: <a href="../tags/console.html" class="link">console, </a><a href="../tags/htop.html" class="link">htop, </a><a href="../tags/systemd.html" class="link">systemd, </a><a href="../tags/tty.html" class="link">tty, </a><div class="footer">
                 <hr>
                 <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
                 <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
