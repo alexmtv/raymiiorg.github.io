@@ -1,0 +1,731 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+        <title>Distributed load testing with Tsung - Raymii.org</title>
+        <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
+        <link href="/s/inc/css/light.css" rel="stylesheet"  />
+        <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
+        <script src="/s//inc/js/toc.js" type="text/javascript"></script>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <link href="inc/img/icons/iphone.png" rel="apple-touch-icon" />
+        <link href="inc/img/icons/ipad.png" rel="apple-touch-icon" sizes="76x76" />
+        <link href="inc/img/icons/iphone-retina.png" rel="apple-touch-icon" sizes="120x120" />
+        <link href="inc/img/icons/ipad-retina.png" rel="apple-touch-icon" sizes="152x152" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
+    </head>
+    <body>
+        <a id="top-of-page"></a>
+        <div class="container-fluid ">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-3 col-sm-3 max-200">
+                        <div class="well well-none"> 
+                            <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
+                            <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
+                        </div>
+          
+
+    
+    <form role="search" action="https://encrypted.google.com/search">
+        <div class="form-group">
+          <input type="hidden" name="as_sitesearch" value="raymii.org">
+          <input type="hidden" name="as_qdr" value="all">
+          <input type="text" name="as_q" class="form-control" placeholder="Search">
+        </div>
+      </form>
+      <div class="menu"><ul class="nav nav-pills nav-stacked"><li><a href="/s/index.html" class="special-menu">Home</a></li><li class='bottom-spacing'><a href="/s/everything.html" class="special-menu">All Pages</a></li><li class='hideifsmall'><a href="/s/tags/bash.html" class="link">Bash</a></li><li class='hideifsmall'><a href="/s/tags/monitoring.html" class="link">Monitoring</a></li><li class='hideifsmall'><a href="/s/tags/ssl.html" class="link">SSL</a></li><li class='hideifsmall'><a href="/s/tags/debian.html" class="link">Debian</a></li><li class='hideifsmall'><a href="/s/tags/python.html" class="link">Python</a></li><li class='hideifsmall'><a href="/s/tags/vpn.html" class="link">VPN</a></li><li class='hideifsmall'><a href="/s/tags/ubuntu.html" class="link">Ubuntu</a></li><li class='hideifsmall'><a href="/s/tags/nginx.html" class="link">nginx</a></li><li class='hideifsmall'><a href="/s/tags/openstack.html" class="link">Openstack</a></li><li class='hideifsmall'><a href="/s/tags/ansible.html" class="link">Ansible</a></li></ul>            
+               <!-- advertisement start -->
+                <a href="http://clients.inceptionhosting.com/aff.php?aff=083">Inception Hosting Affiliate Link</a><br />
+                <a href="https://www.digitalocean.com/?refcode=7435ae6b8212">Digital Ocean Affiliate Link, $10 free credit.</a><br />
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- Raymii-2 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:200px;height:200px"
+                     data-ad-client="ca-pub-7993642564731324"
+                     data-ad-slot="9322003332"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                <!-- advertisement end -->
+                </div>
+           </div>  
+           <div class="col-md-8 col-sm-8"> 
+                <div class="inner">
+
+           <h2 class='headheader'>Distributed load testing with Tsung</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../articles/index.html" class="link">Articles</a></li><li><a href="Basic_Website_load_testing_with_Tsung.html" class="link">Distributed load testing with Tsung</a></li></ul><p><small>13-04-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><h3>Preface</h3>
+
+<p><img src="https://raymii.org/s/inc/img/tsung_logo_non_official.png"></p>
+
+<p>At $dayjob I manage a large OpenStack Cloud. Next to that I also build high-performance and redundant clusters for customers. Think multiple datacenters, <code>haproxy</code>, <code>galera</code> or <code>postgres</code> or mysql replication, <code>drbd</code> with <code>nfs</code> or <code>glusterfs</code> and all sorts of software that can (and sometimes cannot) be clustered (<code>redis</code>, <code>rabbitmq</code> etc.). Our customers deploy their application on there and when one or a few components fail, their application stays up. Hypervisors, disks, switches, routers, all can fail without actual service downtime. Next to building such clusters, we also monitor and manage them.</p>
+
+<p>When we build such a cluster (fully automated with Ansible) we do a basic load test. We do this not for benchmarking or application flow testing, but to optimize the cluster components. Simple things like the <code>mpm</code> workers or threads in Apache or more advanced topics like MySQL or DRBD. Optimization there depends on the specifications of the servers used and the load patterns.</p>
+
+<p>Tsung is a high-performance but simple to configure and use piece of software written in Erlang. Configuration is done in a simple readable XML file. Tsung can be run distributed as well for large setups. It has good reporting and a live web interface for status and reports during a test.</p>
+
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring this site by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a></p>
+
+<p>I&#39;m by no means a load-testing expert. User flow, parsing the results and such are not my cup of tea. I do however understand server performance and optimization. These load tests are ment to help me and my team to have a general idea of that the clients setup is able to handle. For example, high-load clusters benefit from several extra IP addresses just for monitoring. Sockets in linux are per IP, and when the IP&#39;s and conntrack are exhausted, the monitoring IP will still work. We found that during one of these load tests where the load was relatively low, but all the monitoring failed (because of conntrack). </p>
+
+<h3>Tsung configuration</h3>
+
+<p>The tsung configuration file consists out of several different parts. We&#39;ll cover them here, but first we must install the software. The version of <code>tsung</code> that I&#39;m using is 1.6.0. We&#39;ll talk in detail about the configuration file. The entire file can be found at the bottom of this page as a whole. </p>
+
+<h4>Installation</h4>
+
+<p>Tsung can be installed via <code>apt</code>:</p>
+
+<pre><code>apt-get install tsung
+</code></pre>
+
+<p>Under Ubuntu 16.04 and 17.04 I did get strange erlang errors complaining about <code>enoent</code>. It appears in the Ubuntu package something was missing. Manually compiling <code>tsung</code> with the classical </p>
+
+<pre><code>./configure
+make
+make install
+</code></pre>
+
+<p>fixed those errors.</p>
+
+<h4>Header</h4>
+
+<p>Tsung configuration is xml, so first we need to place the header:</p>
+
+<pre><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE tsung SYSTEM &quot;/usr/share/tsung/tsung-1.0.dtd&quot;&gt;
+&lt;tsung loglevel=&quot;notice&quot; version=&quot;1.0&quot;&gt;
+</code></pre>
+
+<h4>Clients</h4>
+
+<p>The clients are the servers that execute the actual load test. If you have a distributed setup (see below) then you define them here:</p>
+
+<pre><code>&lt;clients&gt;
+  &lt;client host=&quot;ts2&quot; maxusers=&quot;30000&quot; weight=&quot;2&quot; /&gt;
+  &lt;client host=&quot;ts3&quot; weight=&quot;1&quot; /&gt;
+&lt;/clients&gt;
+</code></pre>
+
+<p><code>ts3</code> will do a maximum amount of users and client <code>ts2</code> will be used twice as much as client <code>ts3</code> due to the weight. You can omit those two options.</p>
+
+<p>If you want to execute the test from your local workstation you can use the following configuration:</p>
+
+<pre><code>&lt;clients&gt;
+  &lt;client host=&quot;localhost&quot; use_controller_vm=&quot;true&quot;/&gt;
+&lt;/clients&gt;
+</code></pre>
+
+<h4>Servers</h4>
+
+<p>The servers are the endpoints where the clients will send the requests to. This will be either the hostname or IP address of the server you are going to test. </p>
+
+<pre><code>&lt;servers&gt;
+  &lt;server host=&quot;example.org&quot; port=&quot;443&quot; type=&quot;ssl&quot;&gt;&lt;/server&gt;
+&lt;/servers&gt;
+</code></pre>
+
+<p>Servers can have a <code>weight</code> as well.</p>
+
+<p><code>type</code> can be any of the following:</p>
+
+<ul>
+<li>tcp</li>
+<li>ssl </li>
+<li>udp </li>
+<li>tcp6</li>
+<li>ssl6 </li>
+<li>udp6</li>
+<li>websocket </li>
+</ul>
+
+<p>For HTTP you need to use <code>tcp</code>, for HTTPS you need to use <code>ssl</code>. If you use multiple servers based on IP address and they use virtual hosts, for every request (see below) you need to also define the <code>HTTP Host:</code> header in the configuration section for that request:</p>
+
+<pre><code>&lt;request&gt;
+  &lt;http url=&quot;/bla&quot; method=&quot;POST&quot; contents=&quot;bla=blu&amp;amp;name=glop&quot;&gt;
+    &lt;www_authenticate userid=&quot;Aladdin&quot; passwd=&quot;open sesame&quot;/&gt;
+    &lt;http_header name=&quot;Cache-Control&quot; value=&quot;no-cache&quot;/&gt;
+    &lt;http_header name=&quot;Host&quot; value=&quot;example.org&quot;/&gt;
+  &lt;/http&gt;
+&lt;/request&gt;
+</code></pre>
+
+<p>For more information on <code>servers</code> and <code>clients</code> <a href="http://tsung.erlang-projects.org/user_manual/conf-client-server.html">see here</a>.</p>
+
+<h4>Load progression</h4>
+
+<p>The load test is split up into several phases. Each phase has a duration and a number of visitors. During these phases the sessions will be executed. A basic load setup I use often is one where there are the number of users increases:</p>
+
+<pre><code>&lt;load&gt;
+  &lt;!-- 50 users a second for 3 minutes == 9000 sessions --&gt;
+  &lt;arrivalphase phase=&quot;1&quot; duration=&quot;3&quot; unit=&quot;minute&quot;&gt;
+    &lt;users arrivalrate=&quot;50&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+  &lt;/arrivalphase&gt;
+  &lt;!-- 100 users a second for 3 minutes == 18000 sessions --&gt;
+  &lt;arrivalphase phase=&quot;2&quot; duration=&quot;3&quot; unit=&quot;minute&quot;&gt;
+    &lt;users arrivalrate=&quot;100&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+  &lt;/arrivalphase&gt;
+  &lt;!-- 200 users a second for 6 minutes == 72000 sessions --&gt;
+  &lt;arrivalphase phase=&quot;3&quot; duration=&quot;6&quot; unit=&quot;minute&quot;&gt;
+    &lt;users arrivalrate=&quot;200&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+  &lt;/arrivalphase&gt;
+&lt;/load&gt;
+</code></pre>
+
+<p>You can define as many phases as you please. If you want to test a maximum number of users per phase, use the <code>maxnumber=&quot;&quot;</code> option:</p>
+
+<pre><code>&lt;load&gt;
+  &lt;arrivalphase phase=&quot;1&quot; duration=&quot;3&quot; unit=&quot;minute&quot;&gt;
+    &lt;users maxnumber=&quot;100&quot; arrivalrate=&quot;2&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+  &lt;/arrivalphase&gt;
+&lt;/load&gt;
+</code></pre>
+
+<p>There will be a maximum of 100 users in the three minutes setup.</p>
+
+<p>Phases are done in order of the number. First phase 1, then 2, then 3 and so on. These phases can also be looped. More information on phases and load progression <a href="http://tsung.erlang-projects.org/user_manual/conf-load.html">can be found here</a>.</p>
+
+<h4>Options</h4>
+
+<p>Per test we can define options. These are mostly used for <code>xmpp</code> testing, the only option we have for HTTP is the user agent. Multiple user agents can be setup and given a probability:</p>
+
+<pre><code>&lt;options&gt;
+  &lt;option type=&quot;ts_http&quot; name=&quot;user_agent&quot;&gt;
+    &lt;user_agent probability=&quot;20&quot;&gt;Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/4.0.201.1 Safari/532.0&lt;/user_agent&gt;
+    &lt;user_agent probability=&quot;30&quot;&gt;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0&lt;/user_agent&gt;
+    &lt;user_agent probability=&quot;50&quot;&gt;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&lt;/user_agent&gt;
+  &lt;/option&gt;
+&lt;/options&gt;
+</code></pre>
+
+<p>Chrome will be 20% of the visits, Firefox 30 and the rest is Internet Explorer. The probability must add up to 100. </p>
+
+<p>A few more options like SSL Ciphers and global timeouts can be set, <a href="http://tsung.erlang-projects.org/user_manual/conf-options.html">see here</a> for details.</p>
+
+<h4>Sessions</h4>
+
+<p>Sessions define the content of the scenario itself. They describe the requests to execute. Multiple types of requests can be given, next to the basic HTTP GET and POST requests. WEBDAV is supported as well as basic, oauth and digest authentication, HTTP headers and more.</p>
+
+<p>This article limits itself to HTTP website testing. For XMPP and the other types supported by Tsung, please <a href="http://tsung.erlang-projects.org/user_manual/conf-sessions.html">consult the documentation</a>.</p>
+
+<p>Before we dive in to all the configuration, lets think about what our goal is here. We want to simulate a visitor with a web browser. Browsers normally do not just get a page over and over again. They request the page, but also all the content included, like javascript, stylesheets and images. Once a page is loaded, they stop doing stuff while the human reads the page, until a new link is clicked and the whole thing starts over. Include a search or a POST reqeust here and there and you&#39;ve got something much more complex than just a <code>curl</code> loop in your shell. </p>
+
+<p>A very nice feature of Tsung is support for so called Transactions. Transactions are a way to group several requests. In the statistics these requests will be shown as a group, like here below in the image:</p>
+
+<p><img src="https://raymii.org/s/inc/img/tsung2.png"></p>
+
+<p>In the picture I&#39;ve defined two transactions. One to get the index page including javascript, css, the logo image and the custom web fonts, and one to get an actual article including all of the above plus the images in the article.</p>
+
+<p>Using transactions your can understand your statistics better. You can also find out bottlenecks easier. Let&#39;s say your index page and your articles are cached by <code>varnish</code> or <code>nginx</code>, but your product list is not. With the transactions you can probably see that the caching works for the first to. The latter group, the product list, will have a lower performance.</p>
+
+<p>So let&#39;s define our first session with two transactions. Use your favorite browser and the Proxy Recorder from Tsung (see below) or open up the development tools and copy the URL&#39;s of all the requests. You can have multiple sessions as well, after this session we will add another one that does a website search.</p>
+
+<pre><code>&lt;sessions&gt;
+  &lt;session name=&quot;http&quot; weight=&quot;10&quot; type=&quot;ts_http&quot;&gt;
+    &lt;thinktime value=&quot;2&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;
+    &lt;transaction name=&quot;index_request&quot;&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+      &lt;/request&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;/s/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+      &lt;/request&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;/inc/css/custom-first.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt;
+       &lt;/request&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;/inc/css/light.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt;
+       &lt;/request&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;//inc/js/toc.js&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+      &lt;/request&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;/inc/img/resistor-50.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+      &lt;/request&gt;
+      &lt;request&gt;
+        &lt;http url=&quot;/inc/css/raleway.ttf&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+      &lt;/request&gt;
+    &lt;/transaction&gt;
+  &lt;/session&gt;
+&lt;/sessions&gt;
+</code></pre>
+
+<p>The weight can be defined here as well, just as a probability. I prefer to use weight due to a more even distribution, probability is still a chance-based calculation. A probablity of 10 and 90 doesn&#39;t mean that 10% of the requests will be as you specified, just that is has a 10% change. A weight of 1 and 10 will mean that there will be 10 times more requests absolute.</p>
+
+<p>Thinktime is a random pause with a maximum of 2 seconds between requests.</p>
+
+<p>The actual requests are self explanatory, an URL is defined. I use relative URL&#39;s, but you can also use absolute URL&#39;s. Do note that the absolute URL overrides the server for the rest of the sessions, until you define another absolute URL. </p>
+
+<p>Here is an example of a POST request wich submits data and does a HTTP Basic login:</p>
+
+<pre><code>&lt;request&gt;
+  &lt;http url=&quot;/migration/new&quot; method=&quot;POST&quot; contents=&quot;server=www1&amp;amp;name=dave&amp;amp;reason=maintenance&quot;&gt;
+    &lt;www_authenticate userid=&quot;dave@example.org&quot; passwd=&quot;hunter2&quot;/&gt;
+    &lt;http_header name=&quot;Cache-Control&quot; value=&quot;no-cache&quot;/&gt;
+    &lt;http_header name=&quot;Host&quot; value=&quot;www.example.org&quot;/&gt;
+  &lt;/http&gt;
+&lt;/request&gt;
+</code></pre>
+
+<p>You can add a cookie to a request. I haven&#39;t found a way to do a POST and use the cookie you get from that yet. You also need to define the cookie during every request:</p>
+
+<pre><code>&lt;request&gt;
+  &lt;http url=&quot;/s/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;
+    &lt;add_cookie key=&quot;admin&quot; value=&quot;1&quot;/&gt;
+  &lt;/http&gt; 
+&lt;/request&gt;
+</code></pre>
+
+<p>Here is the second transaction which gets an article page from here, including all the images.</p>
+
+<pre><code>&lt;transaction name=&quot;article_request&quot;&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/inc/css/custom-first.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/inc/css/light.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/inc/js/toc.js&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/inc/img/resistor-50.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/inc/css/raleway.ttf&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/busy-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/automate-all-the-things.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/empty-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/iops-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/iops-zfs.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/busy-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/busy-compute2.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+  &lt;request&gt; &lt;http url=&quot;/s/inc/img/notification-memory.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+&lt;/transaction&gt;
+</code></pre>
+
+<h5>Random variables</h5>
+
+<p>Static content mostly works just fine and probably comes from a caching layer. One thing we always do is something dynamic to let the requests fall through the cache and go to the application, <code>php</code>, <code>django</code> or <code>rails</code> for example. 90% of the time we can use the search feature of the tested application, the other 10% we do POST requests or have the development team build a special testing page.</p>
+
+<p>Tsung can do a few more tricks and even allows you to write custom Erlang scripts for more magic. We use but a simple part of that to get a random string for the searches. If the site has a GET based search page, this is easy. </p>
+
+<p>Using <code>dynvars</code> we can create a random string.  Tsung has multiple types of random strings. First, and in my experience the fastest, is a numeric only ID. Append <code>subst=&quot;true&quot;</code> to the <code>&lt;request&gt;</code> for a dynamic variable request.</p>
+
+<p>One thing to remember is that all dynamic variables must be prefixed with an underscore (<code>_</code>) in the requests. If you define a variable named <code>example_var</code>, in your request you need to call it via <code>%%_example_var%%</code>.</p>
+
+<p>In your request you can call this by adding <code>%%ts_user_server:get_unique_id%%</code> in the request URL. For example:</p>
+
+<pre><code>&lt;http url=&quot;/zoeken/?q=%%ts_user_server:get_unique_id%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt;
+</code></pre>
+
+<p>Will result in the following in your logs:</p>
+
+<pre><code>215.83.32.40 - - [14/Apr/2017:16:21:06 +0200] &quot;GET /zoeken/?q=15375 HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/4.0.201.1 Safari/532.0&quot;
+
+215.83.32.40 - - [14/Apr/2017:16:21:09 +0200] &quot;GET /zoeken/?q=15522 HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0&quot;
+
+215.83.32.40 - - [14/Apr/2017:16:21:09 +0200] &quot;GET /zoeken/?q=15532 HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0&quot;
+</code></pre>
+
+<p>The parameter is different for every single request. </p>
+
+<p>The next parameter is <code>urandom_string</code>. According to the documentation this string is faster than <code>random_string</code> but not truly random. It is also the same for the entire session. In the <code>&lt;session&gt;</code>, define the variable:</p>
+
+<pre><code>&lt;setdynvars sourcetype=&quot;urandom_string&quot; length=&quot;20&quot;&gt;
+  &lt;var name=&quot;urndstring1&quot; /&gt;
+&lt;/setdynvars&gt;
+</code></pre>
+
+<p>In your request:</p>
+
+<pre><code>&lt;http url=&quot;/zoeken/?q_random=%%_rndstring1%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+</code></pre>
+
+<p>In your logs:</p>
+
+<pre><code>215.83.32.38 - - [14/Apr/2017:16:08:52 +0200] &quot;GET /zoeken/?q_urand=qxvmvtglimieyhemzlxc HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&quot;
+
+215.83.32.40 - - [14/Apr/2017:16:08:53 +0200] &quot;GET /zoeken/?q_urand=qxvmvtglimieyhemzlxc HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0&quot;
+
+215.83.32.40 - - [14/Apr/2017:16:08:54 +0200] &quot;GET /zoeken/?q_urand=qxvmvtglimieyhemzlxc HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&quot;
+</code></pre>
+
+<p>The same parameter is sent for every request. This can be a problem if your search results are cached, only the first search will be slow until the cache expires.</p>
+
+<p>The last random method is <code>random_string</code>. This is slower to generate but is different for each request.</p>
+
+<p>In your session:</p>
+
+<pre><code>&lt;setdynvars sourcetype=&quot;random_string&quot; length=&quot;13&quot;&gt;
+  &lt;var name=&quot;rndstring1&quot; /&gt;
+&lt;/setdynvars&gt;
+</code></pre>
+
+<p>In your request:</p>
+
+<pre><code>&lt;http url=&quot;/zoeken/?q_random=%%_rndstring1%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+</code></pre>
+
+<p>In your logs:</p>
+
+<pre><code>215.83.32.38 - - [14/Apr/2017:16:08:52 +0200] &quot;GET /zoeken/?q_rand=jrekkkrqrobiq HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&quot;
+
+215.83.32.38 - - [14/Apr/2017:16:08:52 +0200] &quot;GET /zoeken/?q_rand=shypceesbeyth HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&quot;
+
+215.83.32.40 - - [14/Apr/2017:16:08:53 +0200] &quot;GET /zoeken/?q_rand=hwfhuubmgvejb HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0&quot;
+
+215.83.32.40 - - [14/Apr/2017:16:08:54 +0200] &quot;GET /zoeken/?q_rand=egidgqflijzul HTTP/1.1&quot; 200 308 &quot;-&quot; &quot;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&quot;
+</code></pre>
+
+<p>The parameter here is different. </p>
+
+<p>Do be carefull with these random or dynamic requests that fall through the cache to your application. We mostly make 10% of the scenario requests of this type, our experience is that more will bring every application to a grinding halt. Regular user traffic (non-bots) also most of the time doesn&#39;t do that many things that cannot be cached. Take a forum for example, only the post-request that submits a topic or reply cannot be cached, but a user won&#39;t send 1500 new topics in a few minutes. All the other parts, even dynamic stuff like profile pages or user-generated content can be cached. Maybe not in <code>varnish</code>, but in a key-value store like <code>redis</code> instead of directly coming from your database. </p>
+
+<p>Here is a session that utilizes the three different random string methods:</p>
+
+<pre><code>&lt;session name=&quot;zoeken&quot; weight=&quot;1&quot; type=&quot;ts_http&quot;&gt;
+  &lt;setdynvars sourcetype=&quot;random_string&quot; length=&quot;13&quot;&gt;
+    &lt;!-- different for each request --&gt;
+    &lt;var name=&quot;rndstring1&quot; /&gt;
+  &lt;/setdynvars&gt;
+  &lt;setdynvars sourcetype=&quot;urandom_string&quot; length=&quot;20&quot;&gt;
+    &lt;!-- the same for each request --&gt;
+    &lt;var name=&quot;urndstring1&quot; /&gt;
+  &lt;/setdynvars&gt;
+  &lt;request subst=&quot;true&quot;&gt; 
+    &lt;http url=&quot;/zoeken/?q_id=%%ts_user_server:get_unique_id%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+  &lt;/request&gt;
+  &lt;request subst=&quot;true&quot;&gt; 
+    &lt;http url=&quot;/zoeken/?q_random=%%_rndstring1%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+  &lt;/request&gt;
+  &lt;request subst=&quot;true&quot;&gt; 
+    &lt;http url=&quot;/zoeken/?q_urandom=%%_urndstring1%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; 
+  &lt;/request&gt;
+  &lt;thinktime value=&quot;20&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;
+&lt;/session&gt;
+</code></pre>
+
+<h5>Dynamic variables from a file (usernames and passwords)</h5>
+
+<p>The <a href="http://tsung.erlang-projects.org/user_manual/conf-advanced-features.html">manual</a> has another example where you can read a <code>csv</code> file with usernames and passwords and use those for a request. This is a good way to test if your application has a rate-limiting feature, to make sure users cannot just brute-force their way in.</p>
+
+<p>The <code>userlist.csv</code> file:</p>
+
+<pre><code>user1;password1
+user2;password2
+</code></pre>
+
+<p>The dynvar:</p>
+
+<pre><code>&lt;setdynvars sourcetype=&quot;file&quot; fileid=&quot;userlist.csv&quot; delimiter=&quot;;&quot; order=&quot;iter&quot;&gt;
+ &lt;var name=&quot;username&quot; /&gt;
+ &lt;var name=&quot;user_password&quot; /&gt;
+&lt;/setdynvars&gt; 
+</code></pre>
+
+<p>The request:</p>
+
+<pre><code>&lt;request subst=&quot;true&quot;&gt;
+  &lt;http url=&#39;/login/&#39; version=&#39;1.0&#39;
+    contents=&#39;username=%%_username%%&amp;amp;password=%%_user_password%%&amp;amp;op=login&#39;
+  content_type=&#39;application/x-www-form-urlencoded&#39; method=&#39;POST&#39;&gt;
+  &lt;/http&gt;
+&lt;/request&gt;
+</code></pre>
+
+<p>Testing the actual rate limiting can be done as well by checking the servers response. </p>
+
+<h5>Checking the servers response</h5>
+
+<p>With the tag match in a <code>&lt;request&gt;</code> tag, you can check the server&#39;s response against a given string, and do some actions depending on the result. In any case, if it matches, this will increment the <code>match</code> counter, if it does not match, the <code>nomatch</code> counter will be incremented.</p>
+
+<p>The list of available actions to do is:</p>
+
+<ul>
+<li><code>continue</code>: do nothing, continue (only update <code>match</code> or <code>nomatch</code> counters)</li>
+<li><code>log</code>: log the <code>request id</code>, <code>userid</code>, <code>sessionid</code>, <code>name</code> in <code>match.log</code></li>
+<li><code>abort</code>: abort the session</li>
+<li><code>restart</code>: restart the session. </li>
+<li><code>loop</code>: repeat the request, after 5 seconds. The maximum number of loops is 20 by default.</li>
+<li><code>dump</code>: dump the content of the response in a filen filename is <code>match-&lt;userid&gt;-&lt;sessionid&gt;-&lt;requestid&gt;-&lt;dumpid&gt;.dump</code></li>
+</ul>
+
+<p>To test if brute-force protection works, you can use either the <code>continue</code> option or the <code>abort</code> option. If you use continue, check the <code>nomatch</code> counter in the statistics. If you use the <code>abort</code> option, the test will stop when the rate-limiting is in place and your match fails.</p>
+
+<p>Here is an example of a login page with an <code>abort</code> if the content has the words <code>login failed!</code>:</p>
+
+<pre><code>&lt;request&gt;
+   &lt;match do=&quot;abort&quot; when=&quot;match&quot;&gt;login failed!&lt;/match&gt;
+   &lt;http url=&quot;/login.php&quot; version=&quot;1.0&quot; method=&quot;POST&quot;
+         contents=&quot;username=dave&amp;amp;user_password=hunter2&quot;
+         content_type=&quot;application/x-www-form-urlencoded&quot; &gt;
+&lt;/request&gt;
+</code></pre>
+
+<p>You can also use <code>nomatch</code>, for example if you don&#39;t give an error when your brute-force protection kicks in. You can then test if the <code>Welcome dear $username</code> is not on the page.</p>
+
+<p>The <a href="http://tsung.erlang-projects.org/user_manual/conf-advanced-features.html#checking-the-server-s-response">docs</a> have more examples, including complex conditionals and loops.</p>
+
+<h4>Closing the XML</h4>
+
+<p>When you&#39;ve defined all your transactions and requests, you need to close the file with the last tag:</p>
+
+<pre><code>&lt;/tsung&gt;
+</code></pre>
+
+<p>Now you&#39;re ready to execute the loadtest.</p>
+
+<h3>Running a test</h3>
+
+<p>With your configuration file set up, and if defined, your distributed setup working, you can start the test. During the test there is a live status web interface running on <a href="127.0.0.1:8091"><code>127.0.0.1:8091</code></a>: </p>
+
+<p><img src="https://raymii.org/s/inc/img/tsung1.png"></p>
+
+<p>Using the below command we can start a test. The <code>-k</code> option keeps the web interface open even when the test is finished. </p>
+
+<pre><code>tsung -k -f file.xml start
+</code></pre>
+
+<p>Example output:</p>
+
+<pre><code>Starting Tsung
+Log directory is: /root/.tsung/log/20170414-1609
+</code></pre>
+
+<p>When the test is finished:</p>
+
+<pre><code>All slaves have stopped; keep controller and web dashboard alive. 
+Hit CTRL-C or click Stop on the dashboard to stop.
+</code></pre>
+
+<p>If you want to abort a test while it is running, because for example your server crashes, hit <code>CTRL+C</code> a few times. </p>
+
+<p>During the test you get live metrics and graphs on the web interface:</p>
+
+<p><img src="https://raymii.org/s/inc/img/tsung3.png"></p>
+
+<p>I&#39;ll discuss two other very nice features of Tsung, the distributed setup and the proxy recorder. The distributed setup allows you to scale up the load test far beyond one server. We&#39;ve done tests with over ten million concurrent hits using 50 virtual machines. Just small single core instances with gigabit network.</p>
+
+<p>The proxy recorder allows you to record a browsing session. Way better than manually creating a text configuration file. Even the client can do so.</p>
+
+<h3>Distributed setup</h3>
+
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring this site by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a></p>
+
+<p>Tsung communicates between testing nodes using SSH, so make sure your SSH keys are installed on the servers and that you can SSH between them without a password prompt. If you can&#39;t, generate a special SSH key for tsung, without a password:</p>
+
+<pre><code>ssh-keygen -C &#39;tsung&#39; -t rsa -b 2048 -N &quot;&quot; -f /root/.ssh/id_rsa.tsung
+</code></pre>
+
+<p>Output:</p>
+
+<pre><code>Generating public/private rsa key pair.
+Your identification has been saved in /root/.ssh/id_rsa.tsung.
+Your public key has been saved in /root/.ssh/id_rsa.tsung.pub.
+The key fingerprint is:
+SHA256:eCl3Vkk/afmYAraZVQw4Y9OSnIIQas tsung
+The key&#39;s randomart image is:
++---[RSA 2048]----+
+|o+oo.oo= B+o     |
+|                 |
++----[SHA256]-----+
+</code></pre>
+
+<p>Place the key on the server you are using for tsung:</p>
+
+<pre><code>ssh-copy-id root@1.2.3.4
+</code></pre>
+
+<p>Add the server to your SSH config and specify to use the key we just generated:</p>
+
+<pre><code>vim ~/.ssh/config
+</code></pre>
+
+<p>Add:</p>
+
+<pre><code>Host ts1
+ Hostname 1.2.3.4
+ User root
+ IdentityFile ~/.ssh/id_rsa.tsung
+ Port 22
+</code></pre>
+
+<p>Also add them to your <code>/etc/hosts</code> file:</p>
+
+<pre><code>1.2.3.4 ts1
+4.3.2.1 ts2
+</code></pre>
+
+<p>Test to see if you can login without a password:</p>
+
+<pre><code>ssh root@ts1
+</code></pre>
+
+<p>Repeat this for all the other nodes.</p>
+
+<p>You must use a hostname (ssh hostname or actual hostname), otherwise you will get an error:</p>
+
+<pre><code>ERROR: client config: &#39;host&#39; attribute must be a hostname, not an IP ! (was &quot;213.187.242.156&quot;)
+</code></pre>
+
+<p>It is important to use the same <code>erlang</code> and <code>tsung</code> version on all the servers. I had my controller vm on CentOS 7 and the test servers on Ubuntu 16.04, with a slightly different erlang version (<code>erts-8.2.1</code> vs <code>erts-8.3</code>) and the tests all timed out or failed. Booting up a controller VM with 16.04 made it all work.</p>
+
+<p>If you do experience issues with the distributed setup, you can test if the SSH connection via erlang works. On your controller VM execute the following command:</p>
+
+<pre><code>erl -rsh ssh -sname foo -setcookie mycookie
+</code></pre>
+
+<p>In the prompt, give the following command, where <code>ts2</code> is the hostname of the server to test the connection to:</p>
+
+<pre><code>slave:start(ts2,bar,&quot;-setcookie mycookie&quot;).
+</code></pre>
+
+<p>It should return:</p>
+
+<pre><code>{ok,bar@ts2}
+</code></pre>
+
+<p>Otherwise your setup is incorrect. <a href="http://tsung.erlang-projects.org/user_manual/faq.html#can-t-start-distributed-clients-timeout-error">See here</a> for more troubleshooting tips.</p>
+
+<h3>Proxy recorder</h3>
+
+<p>Tsung has a proxy recorder. It allows you to record a browser session to a configuration file. I haven&#39;t used it but for complicated browsing session it seems quite handy.</p>
+
+<p>The recorder has three plugins: for HTTP, WebDAV and for PostgreSQL. To start it, run:</p>
+
+<pre><code>tsung-recorder -p PLUGIN start
+</code></pre>
+
+<p>where PLUGIN can be <code>http</code>, <code>webdav</code> or <code>pgsql</code> for PostgreSQL. The default plugin is <code>http</code>. The proxy is listening to port 8090. You can change the port with <code>-L portnumber</code>.</p>
+
+<p>To stop it, use :</p>
+
+<pre><code>tsung-recorder stop.
+</code></pre>
+
+<p>The recorded session is created as <code>~/.tsung/tsung_recorderYYYMMDD-HH:MM.xml</code>; if it doesn&#39;t work, take a look at <code>~/.tsung/log/tsung.log-tsung_recorder@hostname</code>.</p>
+
+<p><a href="http://tsung.erlang-projects.org/user_manual/proxy.html">More info</a></p>
+
+<h3>Complete example configuration</h3>
+
+<p>Below you&#39;ll find the complete configuration file we discussed in this article.</p>
+
+<pre><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE tsung SYSTEM &quot;/usr/share/tsung/tsung-1.0.dtd&quot;&gt;
+&lt;tsung loglevel=&quot;notice&quot; version=&quot;1.0&quot;&gt;
+
+  &lt;clients&gt;
+    &lt;client host=&quot;ts2&quot; maxusers=&quot;30000&quot;/&gt;
+    &lt;client host=&quot;ts3&quot; maxusers=&quot;30000&quot;/&gt;
+  &lt;/clients&gt;
+
+  &lt;!-- Server side setup --&gt;
+  &lt;servers&gt;
+    &lt;server host=&quot;example.org&quot; port=&quot;443&quot; type=&quot;ssl&quot;&gt;&lt;/server&gt;
+  &lt;/servers&gt;
+
+  &lt;load&gt;
+    &lt;arrivalphase phase=&quot;1&quot; duration=&quot;3&quot; unit=&quot;minute&quot;&gt;
+      &lt;users arrivalrate=&quot;500&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+    &lt;/arrivalphase&gt;
+    &lt;arrivalphase phase=&quot;2&quot; duration=&quot;3&quot; unit=&quot;minute&quot;&gt;
+      &lt;users arrivalrate=&quot;1000&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+    &lt;/arrivalphase&gt;
+    &lt;arrivalphase phase=&quot;3&quot; duration=&quot;6&quot; unit=&quot;minute&quot;&gt;
+      &lt;users arrivalrate=&quot;2000&quot; unit=&quot;second&quot;&gt;&lt;/users&gt;
+    &lt;/arrivalphase&gt;
+  &lt;/load&gt;
+
+  &lt;options&gt;
+   &lt;option type=&quot;ts_http&quot; name=&quot;user_agent&quot;&gt;
+    &lt;user_agent probability=&quot;20&quot;&gt;Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/4.0.201.1 Safari/532.0&lt;/user_agent&gt;
+    &lt;user_agent probability=&quot;30&quot;&gt;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0&lt;/user_agent&gt;
+    &lt;user_agent probability=&quot;50&quot;&gt;Mozilla/5.0 (IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko&lt;/user_agent&gt;
+  &lt;/option&gt;
+&lt;/options&gt;
+
+  &lt;sessions&gt;
+    &lt;session name=&quot;zoeken&quot; weight=&quot;1&quot; type=&quot;ts_http&quot;&gt;
+      &lt;setdynvars sourcetype=&quot;random_string&quot; length=&quot;13&quot;&gt;
+        &lt;var name=&quot;rndstring1&quot; /&gt;
+      &lt;/setdynvars&gt;
+      &lt;setdynvars sourcetype=&quot;urandom_string&quot; length=&quot;20&quot;&gt;
+        &lt;var name=&quot;urndstring1&quot; /&gt;
+      &lt;/setdynvars&gt;
+      &lt;request subst=&quot;true&quot;&gt; &lt;http url=&quot;/zoeken/?q=%%ts_user_server:get_unique_id%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+      &lt;request subst=&quot;true&quot;&gt; &lt;http url=&quot;/zoeken/?q=%%_rndstring1%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+      &lt;request subst=&quot;true&quot;&gt; &lt;http url=&quot;/zoeken/?q=%%_urndstring1%%&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+      &lt;thinktime value=&quot;20&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;
+    &lt;/session&gt;
+
+    &lt;session name=&quot;http&quot; weight=&quot;10&quot; type=&quot;ts_http&quot;&gt;
+      &lt;thinktime value=&quot;2&quot; random=&quot;true&quot;&gt;&lt;/thinktime&gt;
+
+      &lt;transaction name=&quot;index_request&quot;&gt;
+        &lt;request&gt; &lt;http url=&quot;/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/css/custom-first.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/css/light.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;//inc/js/toc.js&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/img/resistor-50.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/css/raleway.ttf&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+      &lt;/transaction&gt;
+
+      &lt;transaction name=&quot;article_request&quot;&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/css/custom-first.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/css/light.css&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/js/toc.js&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/img/resistor-50.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/inc/css/raleway.ttf&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/busy-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/automate-all-the-things.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/empty-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/iops-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/iops-zfs.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/busy-compute.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/busy-compute2.jpg&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+        &lt;request&gt; &lt;http url=&quot;/s/inc/img/notification-memory.png&quot; method=&quot;GET&quot; version=&quot;1.1&quot;&gt;&lt;/http&gt; &lt;/request&gt;
+      &lt;/transaction&gt;
+    &lt;/session&gt;
+  &lt;/sessions&gt;
+&lt;/tsung&gt;
+</code></pre>
+
+<h3>Conclusion</h3>
+
+<p>Load testing is a powerfull tool. We use it to optimize our clusters. You can also do more harm than good with it, like crashing poorly setup applications. So please make sure you always test only your own setup or a non-production setup. A staging or preproduction environment that replicates production, or if you must, make sure to have written permission from the client on the exact test you are going to execute.</p>
+</div><hr>Tags: <a href="../tags/ab.html" class="link">ab, </a><a href="../tags/benchmark.html" class="link">benchmark, </a><a href="../tags/loadtest.html" class="link">loadtest, </a><a href="../tags/performance.html" class="link">performance, </a><a href="../tags/ssl.html" class="link">ssl, </a><a href="../tags/testing.html" class="link">testing, </a><a href="../tags/tls.html" class="link">tls, </a><a href="../tags/tsung.html" class="link">tsung, </a><div class="footer">
+                <hr>
+                <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
+                <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
+                <a href="/s/static/About.html">About</a><br />
+                </div>
+            </div>
+        </div>
+    </div>  
+    </div>
+    </div>
+     
+    <!-- Piwik --> 
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hosted-oswa.org/piwik/" : "http://hosted-oswa.org/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hosted-oswa.org/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+    </body>
+    </html>
+    
