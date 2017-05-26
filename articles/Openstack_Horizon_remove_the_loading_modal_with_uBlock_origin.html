@@ -2,7 +2,7 @@
     <!DOCTYPE html>
     <html lang="en">
         <head>
-        <title>nova - Raymii.org</title>
+        <title>Openstack Horizon, remove the loading modal with uBlock Origin - Raymii.org</title>
         <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
         <link href="/s/inc/css/light.css" rel="stylesheet"  />
         <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
@@ -15,7 +15,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
-        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/tags/nova.xml" />
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
     </head>
     <body>
         <a id="top-of-page"></a>
@@ -26,7 +26,7 @@
                         <div class="well well-none"> 
                             <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
                             <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
-                            <h6><a href="https://raymii.org/s/tags/nova.xml">RSS Feed</a></h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
                         </div>
           
 
@@ -57,7 +57,32 @@
            <div class="col-md-8 col-sm-8"> 
                 <div class="inner">
 
-           <h2>Tag nova</h2><p>Tag pages have a different RSS feed with just the items per tag.</p><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../tags/index.html" class="link">Tags</a></li><li><a href="nova.html" class="link">nova</a></li></ul><ul class='list-group'><li class='list-group-item'><a href="../tutorials/Ansible_-_create_OpenStack_servers_with_os_server.html" class="link">Ansible - Create OpenStack servers with Ansible 2.0 and the os_server module and a dynamic inventory</a></li><li class='list-group-item'><a href="../tutorials/Automating_Openstack_with_Cloud_init_run_a_script_on_VMs_first_boot.html" class="link">Automating Openstack with cloud init run a script on VM's first boot</a></li><li class='list-group-item'><a href="../blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html" class="link">Burn in testing for new Hypervisor and Storage server hardware</a></li><li class='list-group-item'><a href="../articles/Fix_inconsistent_Openstack_volumes_and_instances_from_Cinder_and_Nova_via_the_database.html" class="link">Fix inconsistent Openstack volumes and instances from Cinder and Nova via the database</a></li><li class='list-group-item'><a href="../articles/Openstack_-_(Manually)_migrating_(KVM)_Nova_Compute_Virtual_Machines.html" class="link">Openstack - (Manually) migrating (KVM) Nova compute virtual machines</a></li><li class='list-group-item'><a href="../articles/Openstack_Affinity_Groups-make-sure-instances-are-on-the-same-or-a-different-hypervisor-host.html" class="link">Openstack Affinity Groups, make sure instances are on the same or different compute hypervisor hosts</a></li><li class='list-group-item'><a href="../tutorials/Openstack_Glance_Image_Download.html" class="link">Openstack Glance Image Download, download Openstack images</a></li><li class='list-group-item'><a href="../articles/Openstack_Horizon_remove_the_loading_modal_with_uBlock_origin.html" class="link">Openstack Horizon, remove the loading modal with uBlock Origin</a></li><li class='list-group-item'><a href="../articles/Openstack_Soft_Delete_-_recover_deleted_instances.html" class="link">Openstack Soft Delete - recover deleted instances</a></li></ul><div class="footer">
+           <h2 class='headheader'>Openstack Horizon, remove the loading modal with uBlock Origin</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../articles/index.html" class="link">Articles</a></li><li><a href="Openstack_Horizon_remove_the_loading_modal_with_uBlock_origin.html" class="link">Openstack Horizon, remove the loading modal with uBlock Origin</a></li></ul><p><small>25-05-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>The OpenStack dashboard, Horizon, is a great piece of software to manage your OpenStack resources via the web. However, it has, in my opinion, a very big usability issue. The loading dialog that appears after you click a link. It blocks the entire page and all other links. So, whenever I click, I have to wait three to five seconds before I can do anything else. Clicked the wrong menu item? Sucks to be you, here have some loading. Clicked a link and quickly want to open something in a new tab while the page is still loading? Nope, not today. It&#39;s not that browsers have had a function to show that a page is loading, no, of course, the loading indication that has been there forever is not good enough. Let&#39;s re-invent the wheel and significantly impact the user experience. With two rules in uBlock Origin this loading modal is removed and you can work normally again in Horizon</p>
+
+<p>Here&#39;s a screenshot of the loading dialog: </p>
+
+<p><img src="https://raymii.org/s/inc/img/horizon_loading.png"></p>
+
+<p>To remove the dialog, install uBlock Origin and open up the preferences. Go to the My List tab, and add the following rules:</p>
+
+<pre><code>your.horizon-url.net##.loading
+your.horizon-url.net##.modal-backdrop
+</code></pre>
+
+<p>Put your own domain URL there. If you just want to have the loading dialog, but not the backdrop that blocks everything, leave out the last line.</p>
+
+<p>Afterwards, reload the dashboard and enjoy your enhanched user experience.</p>
+</div><hr>Tags: <a href="../tags/cloud.html" class="link">cloud, </a><a href="../tags/dashboard.html" class="link">dashboard, </a><a href="../tags/horizon.html" class="link">horizon, </a><a href="../tags/nova.html" class="link">nova, </a><a href="../tags/openstack.html" class="link">openstack, </a><a href="../tags/ublock.html" class="link">ublock, </a><div class="footer">
                 <hr>
                 <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
                 <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
