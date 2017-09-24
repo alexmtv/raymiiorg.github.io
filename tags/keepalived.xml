@@ -11,7 +11,7 @@
                 <link>https://raymii.org/s/articles/Adding_IPv6_to_a_keepalived_and_haproxy_cluster.html</link> 
                 <guid>https://raymii.org/s/articles/Adding_IPv6_to_a_keepalived_and_haproxy_cluster.html</guid>
                 <description>At work I regularly build high-available clusters for customers, where the setup is distributed over multiple datacenters with failover software. If one component fails, the service doesn't experience issues or downtime due to the failure. Recently I was tasked with expanding a cluster setup to be also reachable via IPv6. This article goes over the settings and configuration required for haproxy and keepalived for IPv6. The internal cluster will only be IPv4, the loadbalancer terminates HTTP and HTTPS connections. </description> 
-                <pubDate>Thu, 24 Aug 2017 00:00:00 GMT</pubDate>
+                <pubDate>Sun, 24 Sep 2017 00:00:00 GMT</pubDate>
             </item>
     
             <item>
