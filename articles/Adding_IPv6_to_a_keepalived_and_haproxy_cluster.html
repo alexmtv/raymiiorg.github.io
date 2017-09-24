@@ -71,7 +71,7 @@
 
 <h3>Cluster setup</h3>
 
-<p><img src="https://raymii.org/s/inc/ing/cloudvps-cluster.png" alt=cluster></p>
+<p><img src="https://raymii.org/s/inc/img/cloudvps-cluster.png" alt=cluster></p>
 
 <p>This diagram gives a general idea of the clusters I often build at work. The CloudVPS network is fully redundant over multiple data centers, so I don&#39;t have to worry about that part. A setup often consist out of the following components per data center: a loadbalancer, multiple application servers (php, apache, rails, python, java), a database server (mysql/galera or postgresql). So you have three loadbalancer, three databaseservers and three or more application servers in total. Often there are extra components like DRBD/NFS for file storage, Redis as a key/value store, mongodb or elasticsearch. (All which can be clustered). Because we have three datacenters there is enough for a quorum. Sometimes customers choose just two datacenters for cost reasons, then we explain the issues without quorum and make them sign off the risks in the contract.</p>
 
