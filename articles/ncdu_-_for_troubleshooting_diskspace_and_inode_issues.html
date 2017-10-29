@@ -1,0 +1,161 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+        <title>ncdu - for troubleshooting diskspace and inode issues - Raymii.org</title>
+        <link href="/s/inc/css/custom-first.css" rel="stylesheet" />
+        <link href="/s/inc/css/light.css" rel="stylesheet"  />
+        <link href="/s/inc/css/custom.css" rel="stylesheet" title="custom" />
+        <script src="/s//inc/js/toc.js" type="text/javascript"></script>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <link href="inc/img/icons/iphone.png" rel="apple-touch-icon" />
+        <link href="inc/img/icons/ipad.png" rel="apple-touch-icon" sizes="76x76" />
+        <link href="inc/img/icons/iphone-retina.png" rel="apple-touch-icon" sizes="120x120" />
+        <link href="inc/img/icons/ipad-retina.png" rel="apple-touch-icon" sizes="152x152" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link type="application/opensearchdescription+xml" rel="search" href="/s/inc/opensearch.xml"/>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Raymii.org" href="https://raymii.org/s/feed.xml" />
+    </head>
+    <body>
+        <a id="top-of-page"></a>
+        <div class="container-fluid ">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-3 col-sm-3 max-200">
+                        <div class="well well-none"> 
+                            <h3 class="headheader"><a href="https://raymii.org/s/">Raymii.org <img src="/s/inc/img/resistor-50.png" alt="IEC Resistor logo"></a></h3>
+                            <h6 class="headheader">Quis custodiet ipsos custodes?</h6>
+                            <h6><a href="https://raymii.org/s/feed.xml">RSS Feed</a></h6>
+                        </div>
+          
+
+    
+    <form role="search" action="https://encrypted.google.com/search">
+        <div class="form-group">
+          <input type="hidden" name="as_sitesearch" value="raymii.org">
+          <input type="hidden" name="as_qdr" value="all">
+          <input type="text" name="as_q" class="form-control" placeholder="Search">
+        </div>
+      </form>
+      <div class="menu"><ul class="nav nav-pills nav-stacked"><li><a href="/s/index.html" class="special-menu">Home</a></li><li class='bottom-spacing'><a href="/s/everything.html" class="special-menu">All Pages</a></li><li class='hideifsmall'><a href="/s/tags/bash.html" class="link">Bash</a></li><li class='hideifsmall'><a href="/s/tags/monitoring.html" class="link">Monitoring</a></li><li class='hideifsmall'><a href="/s/tags/ssl.html" class="link">SSL</a></li><li class='hideifsmall'><a href="/s/tags/debian.html" class="link">Debian</a></li><li class='hideifsmall'><a href="/s/tags/python.html" class="link">Python</a></li><li class='hideifsmall'><a href="/s/tags/vpn.html" class="link">VPN</a></li><li class='hideifsmall'><a href="/s/tags/ubuntu.html" class="link">Ubuntu</a></li><li class='hideifsmall'><a href="/s/tags/nginx.html" class="link">nginx</a></li><li class='hideifsmall'><a href="/s/tags/openstack.html" class="link">Openstack</a></li><li class='hideifsmall'><a href="/s/tags/ansible.html" class="link">Ansible</a></li></ul>            
+               <!-- advertisement start -->
+                <a href="http://clients.inceptionhosting.com/aff.php?aff=083">Inception Hosting Affiliate Link</a><br />
+                <a href="https://www.digitalocean.com/?refcode=7435ae6b8212">Digital Ocean Affiliate Link, $10 free credit.</a><br />
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- Raymii-2 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:200px;height:200px"
+                     data-ad-client="ca-pub-7993642564731324"
+                     data-ad-slot="9322003332"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                <!-- advertisement end -->
+                </div>
+           </div>  
+           <div class="col-md-8 col-sm-8"> 
+                <div class="inner">
+
+           <h2 class='headheader'>ncdu - for troubleshooting diskspace and inode issues</h2><ul class="breadcrumb"><li><a href="../index.html" class="link">Home</a></li><li><a href="../articles/index.html" class="link">Articles</a></li><li><a href="ncdu_-_for_troubleshooting_diskspace_and_inode_issues.html" class="link">ncdu - for troubleshooting diskspace and inode issues</a></li></ul><p><small>29-10-2017</small> | <small>Remy van Elst</small></p><div class='ad'>
+                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- voorartikel -->
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block;width:728px;height:90px"
+                                 data-ad-client="ca-pub-7993642564731324"
+                                 data-ad-slot="6172324376"></ins>
+                            <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>In my box of sysadmin tools there are multiple gems I use for troubleshooting servers. Since I work at a cloud provider sometimes I have to fix servers that are not mine. One of those tools is <code>ncdu</code>. It&#39;s a very usefull tool when a server has a full disk, both full of used space or full of used inodes. This article covers ncdu and shows the process of finding the culprit when you&#39;re out of disk space or inodes.</p>
+
+<h3>ncdu</h3>
+
+<p>On the <a href="https://dev.yorhel.nl/ncdu">homepage</a> ncdu describes itself as:</p>
+
+<blockquote>
+<p>Ncdu is a disk usage analyzer with an ncurses interface. It is designed to find space hogs on a remote server where you don&#39;t have an entire graphical setup available, but it is a useful tool even on regular desktop systems. Ncdu aims to be fast, simple and easy to use, and should be able to run in any minimal POSIX-like environment with ncurses installed.</p>
+</blockquote>
+
+<p>When the root disk is full, a server will behave strangely. Some daemons still work, others will work for a bit and some refuse to start at all. If you use <code>ext4</code> the server will boot up most of the time since there is a bit of reserved space in the filesystem. </p>
+
+<h3>Space and inodes</h3>
+
+<p>A disk can be full because of too much space being used. You can check that with the <code>df -h</code> command:</p>
+
+<pre><code>root@s1:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        20G   19G     0 100% /
+</code></pre>
+
+<p>A disk can also be full because there are to many files and folders. You&#39;ve ran out of <a href="https://en.wikipedia.org/wiki/Inode">inodes</a>. <code>df -i</code> shows you that:</p>
+
+<pre><code>root@s1:~# df -i
+Filesystem      Inodes   IUsed  IFree IUse% Mounted on
+/dev/vda1      1305600 1305600      0  100% /
+</code></pre>
+
+<p>In this case one of my own servers has ran out of inodes. I know where they are, one of the users has no quota and has synced an entire 10 years of Maildir, which resulted in too many small files. If I wouldn&#39;t have known where the storage was being used, ncdu would be my go to tool for finding out.</p>
+
+<p>Yes you can use <code>du</code> and <code>df</code>. <code>du</code> takes a long time and it doesn&#39;t tell you where the inodes are used. A shell loop with find for finding inodes has the same problem. You also can&#39;t easily navigate the results. </p>
+
+<p>ncdu gives a graphical overview of the files and folders, sorted by most space used. In the lower right corner there is a counter for the number of files in the current folder. Using that counter, you can navigate around the filesystem and see where the millions of inodes are used. Sorting by inode usage can also be done with the <code>C</code> key. No other tool I know of has that option.</p>
+
+<p>ncdu also allows exporting the results. You can then see them on another machine. Usefull if you have a weird ARM nas with terminal display issues. ncdu runs remotely without the TUI, <code>scp</code> over the results file and use the local terminal to find out what&#39;s wrong.</p>
+
+<h3>Installing ncdu</h3>
+
+<p>ncdu is available for almost every operating system imaginable and probably in your package manager:</p>
+
+<pre><code>apt-get install ncdu
+yum install ncdu
+</code></pre>
+
+<p>If you have trouble with a full disk or your package manager doesn&#39;t work, the developer even has static binaries on the page:</p>
+
+<ul>
+<li><a href="https://dev.yorhel.nl/download/ncdu-linux-i486-1.12.tar.gz">i468</a></li>
+<li><a href="https://dev.yorhel.nl/download/ncdu-linux-arm-1.12.tar.gz">arm</a></li>
+</ul>
+
+<p>Sometimes you can remove a few files to make space for this download, where the package manager doesn&#39;t work.</p>
+
+<h3>Using ncdu</h3>
+
+<p><img src="https://raymii.org/s/inc/img/ncdu1.png" alt=ncdu></p>
+
+<p>Start up ncdu. If you don&#39;t give any parameters, it will scan the current folder. If you give a filesystem path, it will scan that:</p>
+
+<pre><code>ncdu /
+</code></pre>
+
+<p>Will start a scan of the entire system. When the scan is finished, use the arrow keys and ENTER to navigate around. Files and folders can be deleted right away using <code>d</code>. You can change the display from the bar to percentage or both using the <code>g</code> key. Sorting based on filesize with <code>s</code>, by name with <code>n</code> and by inodes with <code>C</code>. That option is very usefull when your disk has run out of inodes.</p>
+
+<p>ncdu is not real time. If you remove files outside of ncdu you need to run a rescan. </p>
+</div><hr>Tags: <a href="../tags/bash.html" class="link">bash, </a><a href="../tags/disk.html" class="link">disk, </a><a href="../tags/monitoring.html" class="link">monitoring, </a><a href="../tags/ncdu.html" class="link">ncdu, </a><div class="footer">
+                <hr>
+                <p>Generated by <a href="/s/software/ingsoc.html">ingsoc</a> | 
+                <a href="/s/software/Sparkling_Network.html">Cluster Status</a> | 
+                <a href="/s/static/About.html">About</a><br />
+                </div>
+            </div>
+        </div>
+    </div>  
+    </div>
+    </div>
+     
+    <!-- Piwik --> 
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hosted-oswa.org/piwik/" : "http://hosted-oswa.org/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+    piwikTracker.trackPageView();
+    piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hosted-oswa.org/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+    </body>
+    </html>
+    
