@@ -71,6 +71,8 @@
 
 <p>This article contains both an end user and OpenStack administrator guide to set up and use <code>soft_delete</code> with OpenStack Nova. If an instance is deleted with nova delete, it&#39;s gone right away. If <code>soft_delete</code> is enabled, it will be queued for deletion for a set amount of time, allowing end-users and administrators to restore the instance with the <code>nova restore</code> command. This can save your ass (or an end-users bottom) if the wrong instance is removed. Setup is simple, just one variable in <code>nova.conf</code>. There are some caveats we&#39;ll also discuss here.</p>
 
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring me by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a>  </p>
+
 <h3>Pro&#39;s and Con&#39;s</h3>
 
 <p>There are some considorations you need to make when enabling soft-deletion. I&#39;ll discuss them below.</p>

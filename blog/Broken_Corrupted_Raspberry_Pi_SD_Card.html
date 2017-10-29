@@ -71,6 +71,8 @@
 
 <p>One of my Raspberry Pi&#39;s would not boot up after a reboot. The SD card was corrupted, sadly beyond repair. This article walks you through the steps I took to try to fix the SD card, including fsck, badblocks and other filesystem utilities. It also has tips to reduce the writing on the Raspberry Pi, this to save SD cards from some amount of wear and thus possible corruption.</p>
 
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring me by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a>  </p>
+
 <p>The machine was running as an <a href="http://www.icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter">FM transmitter</a> so that my regular sound system could play podcasts (Please note that it is probably illegal to transmit without having your HAM license). I&#39;t would sync up my feeds and, when turned on, started playing them.</p>
 
 <p>However, after the last reboot it would not start up again. I rigged up the UART to my machine and found out why, there were files that the system could not read, therefore init would not boot up.</p>

@@ -69,6 +69,8 @@
                             </script>
                         </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>Here&#39;s a small bash script that removes all <code>iptables</code> rules and sets up a default ACCEPT ALL state. Before the reset, it creates a backup of the current rules. I use this often to troubleshoot servers with networking issues. If you just blindly do an <code>iptables -F</code> you might lock yourself out of a server since the INPUT policy might be DROP. </p>
 
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring me by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a>  </p>
+
 <p>Save the script to something like <code>iptables-reset.sh</code> and run it:</p>
 
 <pre><code>#!/bin/bash

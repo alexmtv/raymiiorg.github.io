@@ -71,6 +71,8 @@
 
 <p>This guide shows you how to access group variables for a group the current host is not a member of. In Ansible you can access other host variables using <code>hostvars[&#39;hostname&#39;]</code> but not group variables. The way described here is workable, but do I consider it a dirty hack. So why did I need this? I have a setup where ssl is offloaded by haproxy servers, but the virtual hosts and ssl configuration are defined in Apache servers. The loadbalancers and appservers are two different hostgroups, the ssl settings are in the appserver group_vars, which the hosts in the loadbalancer group need to access. The best way to do this is change the haproxy playbooks and configuration and define the certificates there, but in this specific case that wasn&#39;t a workable solution. Editing two yaml files (one for the appservers and one for the loadbalancers) was not an option in this situation.</p>
 
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring me by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a>  </p>
+
 <p>This is applicable for other scenario&#39;s as well. In templates this can be worked around by looping over all the groups, then over all the hosts in the specific group, then if the host is the first in the loop, go over all the hostvars for that host and then access the group var you want. <a href="https://stackoverflow.com/questions/34614337/ansible-get-other-group-vars">This stackoverflow</a> post goes over that. In my case I needed to access it in a playbook, the looping construction woudln&#39;t work there.</p>
 
 <h3>The inventory</h3>

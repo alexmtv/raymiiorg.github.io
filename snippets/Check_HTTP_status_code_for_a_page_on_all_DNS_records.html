@@ -69,6 +69,8 @@
                             </script>
                         </div><br><div id="toc"><h3>Table of Contents</h3></div><hr><div id="contents"><p>This is a small snippet using curl to check the status code of a given URL on all DNS records for a given domain. This site has a few A records in round robin mode, and sometimes the automatic deployment fails. Using this query I can check which server is the culprit and fix it manually.</p>
 
+<p><a href="https://www.digitalocean.com/?refcode=7435ae6b8212">If you like this article, consider sponsoring me by trying out a Digital Ocean VPS. With this link you&#39;ll get a $5 VPS for 2 months free (as in, you get $10 credit). (referral link)</a>  </p>
+
 <p>The normal HEAD request output also shows all the headers the server sends and that is a pain to scroll through. This just shows me the HTTP status code, which is all I want.</p>
 
 <pre><code>dig +short A raymii.org | awk &#39;{print &quot;echo &quot;$1&quot;; curl -s -k -o /dev/null -I -w \&quot;%{http_code}\&quot; https://&quot;$1&quot;/s/blog/Burn_in_testing_for_Hypervisor_and_Storage_servers.html; echo; echo&quot;}&#39; | bash
